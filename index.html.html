@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr. Deive Araujo · Clínica Veterinária</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal:       #1A5F7A;
+  --teal-mid:   #2D8B8B;
+  --teal-light: #57C5B6;
+  --teal-pale:  #E8F6F6;
+  --gold:       #C9941A;
+  --gold-pale:  #FEF9ED;
+  --ink:        #1A2933;
+  --muted:      #6B8A99;
+  --border:     #D4E4EA;
+  --surface:    #F4F9FA;
+  --white:      #FFFFFF;
+  --red:        #D94F3D;
+  --red-pale:   #FDF0EE;
+  --amber:      #E08A1E;
+  --amber-pale: #FEF5E7;
+  --green:      #2A7A4B;
+  --green-pale: #EAF5EE;
+  --r:          12px;
+  --r-sm:       8px;
+  --shadow:     0 1px 3px rgba(26,47,58,.08), 0 4px 12px rgba(26,47,58,.06);
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--teal);
+  color: #fff;
+  padding: 0 16px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-brand { display: flex; align-items: center; gap: 10px; }
+.topbar-brand .paw { font-size: 22px; }
+.topbar-brand h1 { font-family: 'DM Serif Display', serif; font-size: 17px; font-weight: 400; line-height: 1.1; }
+.topbar-brand h1 span { display: block; font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 300; opacity: .7; letter-spacing: .5px; text-transform: uppercase; }
+.config-btn { background: rgba(255,255,255,.15); border: none; color: #fff; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.config-btn:hover { background: rgba(255,255,255,.25); }
+
+/* ── NAV BOTTOM (mobile-first) ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; padding: 8px 4px; border: none; background: none; cursor: pointer;
+  color: var(--muted); font-family: inherit; font-size: 10px; font-weight: 500;
+  transition: color .2s; -webkit-tap-highlight-color: transparent;
+}
+.nav-btn .icon { font-size: 22px; line-height: 1; }
+.nav-btn.active { color: var(--teal); }
+.nav-btn.active .nav-pip { background: var(--teal); }
+.nav-pip { width: 4px; height: 4px; border-radius: 50%; background: transparent; margin: 0 auto -2px; }
+
+/* ── MAIN CONTENT ── */
+.main { padding: 16px 16px 90px; max-width: 680px; margin: 0 auto; }
+
+/* ── SCREENS ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── SECTION TITLE ── */
+.page-title { font-family: 'DM Serif Display', serif; font-size: 24px; font-weight: 400; color: var(--ink); margin-bottom: 4px; }
+.page-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.card-title { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; }
+
+/* ── KPI GRID ── */
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.kpi {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.kpi-val { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--teal); line-height: 1; }
+.kpi-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* ── ALERT LIST ── */
+.alert-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.alert-item:last-child { border-bottom: none; }
+.alert-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.alert-dot.red    { background: var(--red); }
+.alert-dot.amber  { background: var(--amber); }
+.alert-dot.green  { background: var(--green); }
+.alert-text { flex: 1; }
+.alert-text strong { font-size: 14px; font-weight: 500; display: block; }
+.alert-text span   { font-size: 12px; color: var(--muted); }
+.alert-badge {
+  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; white-space: nowrap;
+}
+.badge-red    { background: var(--red-pale);   color: var(--red); }
+.badge-amber  { background: var(--amber-pale);  color: var(--amber); }
+.badge-green  { background: var(--green-pale);  color: var(--green); }
+.badge-teal   { background: var(--teal-pale);   color: var(--teal); }
+
+/* ── SETUP BANNER ── */
+.setup-banner {
+  background: var(--gold-pale);
+  border: 1px solid #F0D890;
+  border-radius: var(--r);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.setup-banner .icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.setup-banner p { font-size: 13px; color: #7A5A10; line-height: 1.5; }
+.setup-banner a { color: var(--gold); font-weight: 600; }
+
+/* ── CALENDAR ── */
+.cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.cal-nav { background: none; border: 1px solid var(--border); border-radius: var(--r-sm); padding: 6px 12px; cursor: pointer; font-family: inherit; color: var(--ink); font-size: 14px; }
+.cal-nav:hover { background: var(--teal-pale); }
+.cal-month { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--ink); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cal-day-lbl { text-align: center; font-size: 11px; font-weight: 600; color: var(--muted); padding: 4px 0; text-transform: uppercase; }
+.cal-day {
+  aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border-radius: 8px; font-size: 13px; cursor: pointer; position: relative;
+  transition: background .15s;
+}
+.cal-day:hover { background: var(--teal-pale); }
+.cal-day.other-month { color: var(--border); }
+.cal-day.today { background: var(--teal); color: #fff; font-weight: 600; }
+.cal-day.has-event::after {
+  content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%);
+  width: 4px; height: 4px; border-radius: 50%; background: var(--gold);
+}
+.cal-day.today.has-event::after { background: #fff; }
+.cal-day.selected { background: var(--teal-pale); border: 2px solid var(--teal); }
+
+/* ── AGENDA LIST ── */
+.agenda-date-header { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin: 14px 0 8px; }
+.agenda-item {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+  box-shadow: var(--shadow); cursor: pointer; transition: border-color .2s;
+}
+.agenda-item:hover { border-color: var(--teal-light); }
+.agenda-time { font-size: 13px; font-weight: 600; color: var(--teal); min-width: 46px; text-align: center; }
+.agenda-line { width: 2px; height: 40px; border-radius: 2px; flex-shrink: 0; }
+.agenda-info { flex: 1; }
+.agenda-animal { font-size: 15px; font-weight: 500; }
+.agenda-detail { font-size: 12px; color: var(--muted); margin-top: 1px; }
+.agenda-type { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+
+/* ── TIPO CONSULTA COLORS ── */
+.type-consulta   { background: var(--teal-pale);  color: var(--teal); }
+.type-vacina     { background: var(--green-pale);  color: var(--green); }
+.type-retorno    { background: var(--amber-pale);  color: var(--amber); }
+.type-emergencia { background: var(--red-pale);    color: var(--red); }
+.line-consulta   { background: var(--teal-light); }
+.line-vacina     { background: var(--green); }
+.line-retorno    { background: var(--amber); }
+.line-emergencia { background: var(--red); }
+
+/* ── FAB ── */
+.fab {
+  position: fixed; bottom: 80px; right: 20px;
+  width: 54px; height: 54px; border-radius: 50%;
+  background: var(--teal); color: #fff;
+  border: none; font-size: 26px; cursor: pointer;
+  box-shadow: 0 4px 14px rgba(26,95,122,.4);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 99; transition: transform .2s, box-shadow .2s;
+}
+.fab:hover { transform: scale(1.06); box-shadow: 0 6px 18px rgba(26,95,122,.5); }
+.fab:active { transform: scale(.96); }
+
+/* ── TABELA DE PREÇOS ── */
+.price-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.price-table th {
+  text-align: left; font-size: 11px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .5px; padding: 6px 8px; border-bottom: 2px solid var(--border);
+}
+.price-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.price-table tr:last-child td { border-bottom: none; }
+.price-table tr:hover td { background: var(--teal-pale); }
+.price-cat { font-size: 11px; font-weight: 600; color: var(--muted); padding: 10px 8px 4px; display: block; text-transform: uppercase; letter-spacing: .5px; }
+.price-val { font-weight: 600; color: var(--teal); text-align: right; }
+.price-desc { color: var(--muted); font-size: 12px; display: block; margin-top: 1px; }
+.search-bar {
+  width: 100%; border: 1px solid var(--border); border-radius: var(--r-sm);
+  padding: 9px 12px 9px 36px; font-size: 14px; font-family: inherit;
+  background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B8A99' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;
+  color: var(--ink); margin-bottom: 12px; outline: none;
+}
+.search-bar:focus { border-color: var(--teal-light); }
+
+/* ── ATESTADO ── */
+.cert-wrap {
+  background: #FDFBF5;
+  border: 3px solid #D4AF37;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.cert-header { background: var(--teal); padding: 14px; text-align: center; }
+.cert-header h2 { font-family: 'DM Serif Display', serif; color: #fff; font-size: 16px; font-weight: 400; }
+.cert-header p  { font-size: 11px; color: rgba(255,255,255,.7); margin-top: 2px; }
+.cert-sub { background: var(--teal-mid); padding: 6px; text-align: center; font-size: 10px; color: rgba(255,255,255,.8); }
+.cert-body { padding: 20px; text-align: center; }
+.cert-title { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--teal); letter-spacing: 2px; }
+.cert-subtitle { font-size: 14px; font-style: italic; color: var(--teal-mid); margin: 2px 0 10px; }
+.cert-divider { border: none; border-top: 1.5px solid #D4AF37; margin: 8px 40px; }
+.cert-stars { color: #D4AF37; font-size: 12px; letter-spacing: 4px; margin-bottom: 12px; }
+.cert-intro { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 6px; }
+.cert-animal { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--teal); min-height: 34px; }
+.cert-bold { font-size: 13px; font-weight: 600; color: var(--teal-mid); margin: 6px 0 3px; text-transform: uppercase; letter-spacing: 1px; }
+.cert-text { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 4px; }
+.cert-data { background: #EBF5F8; padding: 12px 16px; text-align: left; }
+.cert-data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; font-size: 12px; }
+.cert-data-item label { color: var(--teal); font-weight: 600; display: block; font-size: 10px; text-transform: uppercase; }
+.cert-data-item span  { color: var(--ink); }
+.cert-sigs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px 20px 14px; border-top: 1px solid var(--border); }
+.cert-sig { text-align: center; }
+.cert-sig-line { border-top: 1.5px solid var(--teal); margin: 28px 10px 5px; }
+.cert-sig-name { font-size: 10px; font-weight: 600; color: var(--teal); }
+.cert-footer-date { font-size: 10px; color: var(--muted); font-style: italic; padding: 0 16px 12px; text-align: center; }
+.print-btn {
+  width: 100%; padding: 13px; background: var(--teal); color: #fff;
+  border: none; border-radius: var(--r); font-family: inherit; font-size: 15px; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.print-btn:hover { background: #14506A; }
+
+/* ── FORM ── */
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--muted); display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .4px; }
+.form-input, .form-select {
+  width: 100%; border: 1px solid var(--border); border-radius: var(--r-sm);
+  padding: 10px 12px; font-size: 15px; font-family: inherit;
+  background: var(--white); color: var(--ink); outline: none;
+  -webkit-appearance: none;
+}
+.form-input:focus, .form-select:focus { border-color: var(--teal-light); box-shadow: 0 0 0 3px rgba(87,197,182,.15); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-primary {
+  width: 100%; padding: 13px; background: var(--teal); color: #fff;
+  border: none; border-radius: var(--r); font-family: inherit; font-size: 15px; font-weight: 600;
+  cursor: pointer; margin-top: 6px;
+}
+.btn-primary:hover { background: #14506A; }
+.btn-secondary {
+  width: 100%; padding: 11px; background: none; color: var(--teal);
+  border: 1.5px solid var(--teal); border-radius: var(--r); font-family: inherit; font-size: 14px; font-weight: 500;
+  cursor: pointer; margin-top: 8px;
+}
+
+/* ── MODAL OVERLAY ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200;
+  align-items: flex-end; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white); border-radius: 20px 20px 0 0;
+  width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto;
+  padding: 20px 20px 32px;
+  animation: slideUp .25s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+.modal-title { font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 16px; }
+
+/* ── CONFIG SCREEN ── */
+.config-field { margin-bottom: 16px; }
+.config-label { font-size: 12px; font-weight: 600; color: var(--muted); display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .4px; }
+.config-input {
+  width: 100%; border: 1px solid var(--border); border-radius: var(--r-sm);
+  padding: 10px 12px; font-size: 13px; font-family: 'DM Sans', monospace;
+  color: var(--ink); background: var(--white); outline: none;
+}
+.config-input:focus { border-color: var(--teal-light); }
+.config-hint { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+.config-hint a { color: var(--teal); }
+.config-step {
+  background: var(--teal-pale); border-left: 3px solid var(--teal);
+  padding: 10px 12px; border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  margin-bottom: 10px; font-size: 13px; line-height: 1.6;
+}
+.config-step strong { color: var(--teal); }
+.status-ok    { color: var(--green); font-weight: 600; font-size: 13px; }
+.status-error { color: var(--red);   font-weight: 600; font-size: 13px; }
+.status-idle  { color: var(--muted); font-size: 13px; }
+
+/* ── VACINAS ── */
+.vac-item {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+  box-shadow: var(--shadow);
+}
+.vac-icon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.vac-info { flex: 1; }
+.vac-name   { font-size: 15px; font-weight: 500; }
+.vac-detail { font-size: 12px; color: var(--muted); margin-top: 1px; }
+.vac-status { text-align: right; }
+.vac-date { font-size: 11px; font-weight: 600; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: #fff; padding: 10px 18px; border-radius: 20px;
+  font-size: 13px; opacity: 0; transition: all .3s; pointer-events: none; z-index: 300; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── PRINT ── */
+@media print {
+  .topbar, .bottom-nav, .fab, .no-print, body > *:not(.print-area) { display: none !important; }
+  .print-area { display: block !important; }
+  .cert-wrap { border: 3px solid #D4AF37 !important; }
+}
+
+/* ── DESKTOP SIDEBAR ── */
+@media (min-width: 680px) {
+  body { display: flex; }
+  .sidebar {
+    width: 220px; min-height: 100vh; background: var(--white);
+    border-right: 1px solid var(--border); padding: 0; flex-shrink: 0;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  }
+  .sidebar-logo { padding: 18px 18px 12px; border-bottom: 1px solid var(--border); }
+  .sidebar-logo h2 { font-family: 'DM Serif Display', serif; font-size: 18px; font-weight: 400; color: var(--teal); }
+  .sidebar-logo p  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .sidebar-nav { padding: 10px 8px; }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: var(--r-sm); cursor: pointer; font-size: 14px; font-weight: 500;
+    color: var(--muted); transition: all .15s; margin-bottom: 2px; border: none; background: none; width: 100%; text-align: left;
+  }
+  .sidebar-item .icon { font-size: 18px; }
+  .sidebar-item:hover { background: var(--teal-pale); color: var(--teal); }
+  .sidebar-item.active { background: var(--teal-pale); color: var(--teal); font-weight: 600; }
+  .sidebar-divider { height: 1px; background: var(--border); margin: 8px 8px; }
+  .wrap { flex: 1; overflow-x: hidden; }
+  .topbar { display: none; }
+  .bottom-nav { display: none; }
+  .fab { bottom: 24px; }
+  .main { padding: 24px 24px 80px; max-width: 800px; }
+  .sidebar-brand { display: flex; align-items: center; gap: 8px; }
+}
+@media (max-width: 679px) { .sidebar { display: none; } }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR (desktop) -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-brand">
+      <span style="font-size:24px">🐾</span>
+      <div>
+        <h2>Dr. Deive Araujo</h2>
+        <p>CRMV-RJ 22934</p>
+      </div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="sidebar-item active" onclick="showScreen('dashboard')"><span class="icon">🏠</span> Dashboard</button>
+    <button class="sidebar-item" onclick="showScreen('agenda')"><span class="icon">📅</span> Agenda</button>
+    <button class="sidebar-item" onclick="showScreen('vacinas')"><span class="icon">💉</span> Vacinações</button>
+    <button class="sidebar-item" onclick="showScreen('precos')"><span class="icon">💰</span> Tabela de Preços</button>
+    <button class="sidebar-item" onclick="showScreen('atestado')"><span class="icon">🏅</span> Atestado de Coragem</button>
+    <div class="sidebar-divider"></div>
+    <button class="sidebar-item" onclick="showScreen('config')"><span class="icon">⚙️</span> Configurar Sheets</button>
+  </nav>
+</aside>
+
+<div class="wrap">
+<!-- TOPBAR (mobile) -->
+<header class="topbar">
+  <div class="topbar-brand">
+    <span class="paw">🐾</span>
+    <h1>Dr. Deive Araujo<span>Clínica Veterinária · CRMV-RJ 22934</span></h1>
+  </div>
+  <button class="config-btn" onclick="showScreen('config')">⚙️ Sheets</button>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ════════════════════════════════════════ DASHBOARD ══ -->
+<section class="screen active" id="screen-dashboard">
+  <h2 class="page-title">Bom dia! 👋</h2>
+  <p class="page-sub" id="today-label">Carregando...</p>
+
+  <div id="setup-warn" class="setup-banner" style="display:none">
+    <span class="icon">⚠️</span>
+    <p>O app ainda não está conectado ao Google Sheets. <a href="#" onclick="showScreen('config');return false;">Configure agora</a> para ver dados reais.</p>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-val" id="kpi-hoje">—</div><div class="kpi-lbl">Consultas hoje</div></div>
+    <div class="kpi"><div class="kpi-val" id="kpi-semana">—</div><div class="kpi-lbl">Esta semana</div></div>
+    <div class="kpi"><div class="kpi-val" id="kpi-pendentes">—</div><div class="kpi-lbl">Revacinações pendentes</div></div>
+    <div class="kpi"><div class="kpi-val" id="kpi-animais">—</div><div class="kpi-lbl">Animais cadastrados</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Alertas de revacinação</div>
+    <div id="alerts-list">
+      <div class="alert-item">
+        <div class="alert-dot amber"></div>
+        <div class="alert-text"><strong>Conecte o Google Sheets</strong><span>Os alertas aparecerão aqui automaticamente</span></div>
+        <span class="alert-badge badge-amber">Pendente</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Próximas consultas hoje</div>
+    <div id="today-agenda">
+      <div style="text-align:center;padding:20px 0;color:var(--muted);font-size:14px">
+        Configure o Google Sheets para ver a agenda
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ AGENDA ══ -->
+<section class="screen" id="screen-agenda">
+  <h2 class="page-title">Agenda</h2>
+  <p class="page-sub" id="agenda-sub">Consultas e revacinações</p>
+
+  <div class="card">
+    <div class="cal-header">
+      <button class="cal-nav" onclick="calNav(-1)">‹</button>
+      <span class="cal-month" id="cal-month-label"></span>
+      <button class="cal-nav" onclick="calNav(1)">›</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+
+  <div id="agenda-list"></div>
+</section>
+
+<!-- ════════════════════════════════════════ VACINAS ══ -->
+<section class="screen" id="screen-vacinas">
+  <h2 class="page-title">Vacinações</h2>
+  <p class="page-sub">Histórico e próximos reforços</p>
+  <input type="text" class="search-bar" placeholder="Buscar animal ou vacina…" oninput="filterVacinas(this.value)" id="vac-search">
+
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title">Resumo</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center">
+      <div><div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--red)" id="vac-vencidas">—</div><div style="font-size:11px;color:var(--muted)">Vencidas</div></div>
+      <div><div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--amber)" id="vac-proximas">—</div><div style="font-size:11px;color:var(--muted)">Próx. 30d</div></div>
+      <div><div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--green)" id="vac-ok">—</div><div style="font-size:11px;color:var(--muted)">Em dia</div></div>
+    </div>
+  </div>
+
+  <div id="vacinas-list"></div>
+</section>
+
+<!-- ════════════════════════════════════════ PREÇOS ══ -->
+<section class="screen" id="screen-precos">
+  <h2 class="page-title">Tabela de preços</h2>
+  <p class="page-sub">Serviços e procedimentos</p>
+  <input type="text" class="search-bar" placeholder="Buscar serviço…" oninput="filterPrecos(this.value)" id="preco-search">
+  <div class="card" style="padding:8px">
+    <table class="price-table">
+      <thead><tr><th>Serviço</th><th style="text-align:right">Valor</th></tr></thead>
+      <tbody id="precos-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ ATESTADO ══ -->
+<section class="screen" id="screen-atestado">
+  <h2 class="page-title">Atestado de Coragem</h2>
+  <p class="page-sub">Selecione um animal para gerar o certificado</p>
+
+  <div class="card no-print">
+    <div class="card-title">Dados do animal</div>
+    <div class="form-group">
+      <label class="form-label">Animal</label>
+      <select class="form-select" id="cert-animal-select" onchange="fillCertificate()">
+        <option value="">— Selecione —</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Vacina aplicada</label>
+        <input class="form-input" id="cert-vacina" placeholder="Ex: V10 + Antirrábica" oninput="updateCert()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Data</label>
+        <input class="form-input" type="date" id="cert-data" oninput="updateCert()">
+      </div>
+    </div>
+  </div>
+
+  <!-- Certificado visual -->
+  <div class="cert-wrap print-area">
+    <div class="cert-header">
+      <h2>Dr. Deive Araujo  •  Médico Veterinário</h2>
+      <p>CRMV-RJ 22934  |  Clínica Veterinária</p>
+    </div>
+    <div class="cert-sub">Medicina Veterinária com Carinho e Excelência</div>
+    <div class="cert-body">
+      <div class="cert-title">CERTIFICADO</div>
+      <div class="cert-subtitle">de Coragem</div>
+      <hr class="cert-divider">
+      <div class="cert-stars">★ ● ★ ● ★ ● ★ ● ★ ● ★</div>
+      <div class="cert-intro">Certificamos com orgulho que o(a) paciente</div>
+      <div class="cert-animal" id="cert-nome-display">[ Selecione um animal ]</div>
+      <div class="cert-bold">demonstrou muita coragem, confiança e bravura</div>
+      <div class="cert-text">ao receber sua vacina com maestria e tranquilidade!</div>
+      <div class="cert-text">Por isso, recebe este Certificado Especial de Paciente Corajoso(a). 🐾</div>
+    </div>
+    <div class="cert-data">
+      <div class="cert-data-grid">
+        <div class="cert-data-item"><label>Animal</label><span id="cert-d-animal">—</span></div>
+        <div class="cert-data-item"><label>Espécie</label><span id="cert-d-especie">—</span></div>
+        <div class="cert-data-item"><label>Raça</label><span id="cert-d-raca">—</span></div>
+        <div class="cert-data-item"><label>Sexo</label><span id="cert-d-sexo">—</span></div>
+        <div class="cert-data-item"><label>Tutor(a)</label><span id="cert-d-tutor">—</span></div>
+        <div class="cert-data-item"><label>Vacina</label><span id="cert-d-vacina">—</span></div>
+      </div>
+    </div>
+    <div class="cert-sigs">
+      <div class="cert-sig"><div class="cert-sig-line"></div><div class="cert-sig-name">Dr. Deive Araujo · CRMV-RJ 22934</div></div>
+      <div class="cert-sig"><div class="cert-sig-line"></div><div class="cert-sig-name" id="cert-sig-tutor">Assinatura do(a) Tutor(a)</div></div>
+    </div>
+    <div class="cert-footer-date" id="cert-date-display"></div>
+  </div>
+
+  <button class="print-btn no-print" onclick="window.print()">🖨️ Imprimir Certificado</button>
+</section>
+
+<!-- ════════════════════════════════════════ CONFIG ══ -->
+<section class="screen" id="screen-config">
+  <h2 class="page-title">Configurar Google Sheets</h2>
+  <p class="page-sub">Conecte o app ao seu banco de dados</p>
+
+  <div class="card">
+    <div class="card-title">Passo a passo</div>
+    <div class="config-step"><strong>1.</strong> Abra sua planilha no Google Sheets</div>
+    <div class="config-step"><strong>2.</strong> Menu → Extensões → Apps Script</div>
+    <div class="config-step"><strong>3.</strong> Cole o script abaixo, salve e clique em <strong>Implantar → Novo Implantação → App da Web</strong>. Acesso: <strong>Qualquer pessoa</strong></div>
+    <div class="config-step"><strong>4.</strong> Copie a URL gerada e cole no campo abaixo</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Script para Google Apps Script</div>
+    <div style="background:var(--surface);border-radius:var(--r-sm);padding:12px;font-family:monospace;font-size:11px;color:var(--ink);overflow-x:auto;white-space:pre;line-height:1.5;border:1px solid var(--border)">function doGet(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(e.parameter.sheet || 'Consultas');
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0];
+  var rows = data.slice(1).map(function(row) {
+    var obj = {};
+    headers.forEach(function(h, i) { obj[h] = row[i]; });
+    return obj;
+  });
+  return ContentService
+    .createTextOutput(JSON.stringify({data: rows}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var body = JSON.parse(e.postData.contents);
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(body.sheet);
+  sheet.appendRow(body.row);
+  return ContentService
+    .createTextOutput(JSON.stringify({ok: true}))
+    .setMimeType(ContentService.MimeType.JSON);
+}</div>
+    <button class="btn-secondary" onclick="copyScript()">📋 Copiar script</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Conexão</div>
+    <div class="config-field">
+      <label class="config-label">URL do Apps Script (Web App)</label>
+      <input class="config-input" id="sheets-url" placeholder="https://script.google.com/macros/s/..." value="">
+      <p class="config-hint">Cole aqui a URL gerada após implantar o script.</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <button class="btn-primary" style="margin:0;padding:10px 20px;width:auto" onclick="testConnection()">Testar conexão</button>
+      <span id="conn-status" class="status-idle">Não testado</span>
+    </div>
+    <button class="btn-primary" onclick="saveConfig()">💾 Salvar configuração</button>
+  </div>
+
+  <div class="card" style="margin-top:4px">
+    <div class="card-title">Dados de demonstração</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Sem o Sheets configurado, o app usa dados de exemplo para você explorar as funcionalidades.</p>
+    <button class="btn-secondary" style="margin:0" onclick="loadDemoData();showToast('Dados de demonstração carregados!')">🔄 Recarregar dados demo</button>
+  </div>
+</section>
+
+</main><!-- /main -->
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showScreen('dashboard')" id="nav-dashboard">
+    <div class="nav-pip"></div><span class="icon">🏠</span><span>Início</span>
+  </button>
+  <button class="nav-btn" onclick="showScreen('agenda')" id="nav-agenda">
+    <div class="nav-pip"></div><span class="icon">📅</span><span>Agenda</span>
+  </button>
+  <button class="nav-btn" onclick="showScreen('vacinas')" id="nav-vacinas">
+    <div class="nav-pip"></div><span class="icon">💉</span><span>Vacinas</span>
+  </button>
+  <button class="nav-btn" onclick="showScreen('precos')" id="nav-precos">
+    <div class="nav-pip"></div><span class="icon">💰</span><span>Preços</span>
+  </button>
+  <button class="nav-btn" onclick="showScreen('atestado')" id="nav-atestado">
+    <div class="nav-pip"></div><span class="icon">🏅</span><span>Atestado</span>
+  </button>
+</nav>
+
+<!-- FAB -->
+<button class="fab no-print" onclick="openAddModal()" title="Nova consulta">+</button>
+
+<!-- MODAL: Nova consulta -->
+<div class="modal-overlay" id="modal-nova">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Nova consulta / revacinação</div>
+    <div class="form-group">
+      <label class="form-label">Animal</label>
+      <select class="form-select" id="new-animal">
+        <option value="">— Selecione —</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Data</label>
+        <input class="form-input" type="date" id="new-data">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hora</label>
+        <input class="form-input" type="time" id="new-hora">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tipo</label>
+      <select class="form-select" id="new-tipo">
+        <option>Consulta Geral</option>
+        <option>Vacinação</option>
+        <option>Retorno</option>
+        <option>Emergência</option>
+        <option>Check-up</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Observações</label>
+      <input class="form-input" id="new-obs" placeholder="Opcional">
+    </div>
+    <button class="btn-primary" onclick="saveConsulta()">✓ Salvar consulta</button>
+    <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+</div><!-- /wrap -->
+
+<script>
+// ──────────────────────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────────────────────
+let SHEETS_URL = localStorage.getItem('sheets_url') || '';
+let appData = { consultas:[], vacinas:[], animais:[], clientes:[], precos:[] };
+let calDate = new Date();
+
+// ──────────────────────────────────────────────────────────────
+// NAVIGATION
+// ──────────────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  const nb = document.getElementById('nav-'+id);
+  if (nb) nb.classList.add('active');
+  document.querySelectorAll('.sidebar-item').forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('active');
+  });
+  if (id==='agenda') renderCalendar();
+  if (id==='vacinas') renderVacinas();
+  if (id==='precos') renderPrecos();
+  if (id==='atestado') populateCertSelect();
+  if (id==='config') { document.getElementById('sheets-url').value = SHEETS_URL; }
+}
+
+// ──────────────────────────────────────────────────────────────
+// DEMO DATA
+// ──────────────────────────────────────────────────────────────
+function loadDemoData() {
+  const today = new Date();
+  const fmt = d => d.toISOString().split('T')[0];
+  const addDays = (d,n) => { const r=new Date(d); r.setDate(r.getDate()+n); return r; };
+
+  appData.clientes = [
+    {id:1, nome:'Maria Silva', telefone:'(21) 99999-1111'},
+    {id:2, nome:'João Costa', telefone:'(21) 88888-2222'},
+    {id:3, nome:'Ana Pereira', telefone:'(21) 77777-3333'},
+  ];
+  appData.animais = [
+    {id:1, nome:'Rex', especie:'Cão', raca:'Labrador', sexo:'Macho', peso:'28.5', id_tutor:1, tutor:'Maria Silva'},
+    {id:2, nome:'Mimi', especie:'Gato', raca:'SRD', sexo:'Fêmea', peso:'4.2', id_tutor:1, tutor:'Maria Silva'},
+    {id:3, nome:'Bolinha', especie:'Cão', raca:'Poodle', sexo:'Macho', peso:'5.0', id_tutor:2, tutor:'João Costa'},
+    {id:4, nome:'Fifi', especie:'Gato', raca:'Siamês', sexo:'Fêmea', peso:'3.8', id_tutor:3, tutor:'Ana Pereira'},
+  ];
+  appData.consultas = [
+    {data: fmt(today), hora:'09:00', animal:'Rex', tipo:'Consulta Geral', obs:'Check-up anual', id_animal:1},
+    {data: fmt(today), hora:'10:30', animal:'Mimi', tipo:'Vacinação', obs:'V4 Felina', id_animal:2},
+    {data: fmt(today), hora:'14:00', animal:'Bolinha', tipo:'Retorno', obs:'Pós antibiótico', id_animal:3},
+    {data: fmt(addDays(today,1)), hora:'09:30', animal:'Fifi', tipo:'Consulta Geral', obs:'', id_animal:4},
+    {data: fmt(addDays(today,2)), hora:'11:00', animal:'Rex', tipo:'Vacinação', obs:'Antirrábica', id_animal:1},
+    {data: fmt(addDays(today,3)), hora:'15:30', animal:'Mimi', tipo:'Retorno', obs:'', id_animal:2},
+  ];
+  appData.vacinas = [
+    {animal:'Rex', vacina:'V10 Polivalente', data_aplic: fmt(addDays(today,-350)), proximo: fmt(addDays(today,15)), status:'proxima'},
+    {animal:'Rex', vacina:'Antirrábica', data_aplic: fmt(addDays(today,-365)), proximo: fmt(addDays(today,-5)), status:'vencida'},
+    {animal:'Mimi', vacina:'V4 Felina', data_aplic: fmt(addDays(today,-200)), proximo: fmt(addDays(today,165)), status:'ok'},
+    {animal:'Bolinha', vacina:'V10 Polivalente', data_aplic: fmt(addDays(today,-30)), proximo: fmt(addDays(today,335)), status:'ok'},
+    {animal:'Fifi', vacina:'V4 Felina', data_aplic: fmt(addDays(today,-380)), proximo: fmt(addDays(today,-15)), status:'vencida'},
+    {animal:'Fifi', vacina:'Antirrábica', data_aplic: fmt(addDays(today,-25)), proximo: fmt(addDays(today,28)), status:'proxima'},
+  ];
+  appData.precos = [
+    {categoria:'Consultas', servico:'Consulta clínica geral', valor:180},
+    {categoria:'Consultas', servico:'Consulta de emergência', valor:280},
+    {categoria:'Consultas', servico:'Retorno (até 15 dias)', valor:90},
+    {categoria:'Consultas', servico:'Check-up completo', valor:220},
+    {categoria:'Vacinas – Cães', servico:'V10 Polivalente', valor:90},
+    {categoria:'Vacinas – Cães', servico:'Antirrábica', valor:70},
+    {categoria:'Vacinas – Cães', servico:'Gripe Canina', valor:80},
+    {categoria:'Vacinas – Gatos', servico:'V4 Felina', valor:85},
+    {categoria:'Vacinas – Gatos', servico:'Antirrábica felina', valor:70},
+    {categoria:'Procedimentos', servico:'Banho e tosa pequeno porte', valor:65},
+    {categoria:'Procedimentos', servico:'Banho e tosa grande porte', valor:95},
+    {categoria:'Procedimentos', servico:'Microchipagem', valor:120},
+    {categoria:'Procedimentos', servico:'Eletivo (castração – porte pequeno)', valor:550},
+    {categoria:'Procedimentos', servico:'Eletivo (castração – porte médio)', valor:750},
+    {categoria:'Exames', servico:'Hemograma completo', valor:85},
+    {categoria:'Exames', servico:'Raio-X (por incidência)', valor:120},
+    {categoria:'Exames', servico:'Ultrassom abdominal', valor:200},
+  ];
+  updateDashboard();
+}
+
+// ──────────────────────────────────────────────────────────────
+// GOOGLE SHEETS FETCH
+// ──────────────────────────────────────────────────────────────
+async function fetchSheet(sheetName) {
+  if (!SHEETS_URL) return null;
+  try {
+    const res = await fetch(`${SHEETS_URL}?sheet=${sheetName}`);
+    const json = await res.json();
+    return json.data || [];
+  } catch(e) { return null; }
+}
+
+async function loadFromSheets() {
+  if (!SHEETS_URL) { loadDemoData(); return; }
+  showToast('Carregando dados do Sheets…');
+  const [consultas, vacinas, animais, clientes] = await Promise.all([
+    fetchSheet('Consultas'), fetchSheet('Vacinas'),
+    fetchSheet('Animais'), fetchSheet('Clientes')
+  ]);
+  if (!consultas) { loadDemoData(); showToast('Sheets indisponível – usando dados demo'); return; }
+  // Map Sheets columns to app format (adjust header names to match your sheet)
+  appData.consultas = (consultas||[]).map(r=>({
+    data: r['Data Consulta']||'', hora: r['Hora']||'', animal: r['Nome do Animal']||'',
+    tipo: r['Tipo']||'Consulta Geral', obs: r['Diagnóstico / Observações']||'', id_animal: r['ID Animal']||''
+  }));
+  appData.vacinas = (vacinas||[]).map(r=>({
+    animal: r['Nome do Animal']||'', vacina: r['Nome da Vacina']||'',
+    data_aplic: r['Data Aplic.']||'', proximo: r['Próximo Reforço']||'',
+    status: calcVacStatus(r['Próximo Reforço']||'')
+  }));
+  appData.animais = (animais||[]).map(r=>({
+    id: r['ID Animal']||'', nome: r['Nome do Animal']||'',
+    especie: r['Espécie']||'', raca: r['Raça']||'',
+    sexo: r['Sexo']||'', peso: r['Peso (kg)']||'', tutor: r['']||''
+  }));
+  appData.clientes = (clientes||[]).map(r=>({
+    id: r['ID']||'', nome: r['Nome Completo']||'', telefone: r['Telefone']||''
+  }));
+  updateDashboard();
+  showToast('Dados carregados do Google Sheets ✓');
+}
+
+function calcVacStatus(dateStr) {
+  if (!dateStr) return 'ok';
+  const d = parseDate(dateStr);
+  if (!d) return 'ok';
+  const diff = (d - new Date()) / 86400000;
+  if (diff < 0) return 'vencida';
+  if (diff <= 30) return 'proxima';
+  return 'ok';
+}
+
+function parseDate(s) {
+  if (!s) return null;
+  if (s instanceof Date) return s;
+  // dd/mm/yyyy
+  const parts = String(s).split('/');
+  if (parts.length===3) return new Date(+parts[2], +parts[1]-1, +parts[0]);
+  // yyyy-mm-dd
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+
+function fmtDate(s) {
+  const d = parseDate(s);
+  if (!d) return s||'—';
+  return d.toLocaleDateString('pt-BR');
+}
+
+// ──────────────────────────────────────────────────────────────
+// DASHBOARD
+// ──────────────────────────────────────────────────────────────
+function updateDashboard() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayStr = today.toISOString().split('T')[0];
+  const weekEnd = new Date(today); weekEnd.setDate(weekEnd.getDate()+7);
+
+  // Labels
+  const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  const meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  document.getElementById('today-label').textContent =
+    `${dias[today.getDay()]}, ${today.getDate()} de ${meses[today.getMonth()]} de ${today.getFullYear()}`;
+
+  const todayC = appData.consultas.filter(c => normDate(c.data) === todayStr);
+  const weekC  = appData.consultas.filter(c => { const d = parseDate(c.data); return d && d >= today && d <= weekEnd; });
+
+  const vencidas = appData.vacinas.filter(v=>v.status==='vencida');
+  const proximas = appData.vacinas.filter(v=>v.status==='proxima');
+  const pendentes = vencidas.length + proximas.length;
+
+  document.getElementById('kpi-hoje').textContent = todayC.length;
+  document.getElementById('kpi-semana').textContent = weekC.length;
+  document.getElementById('kpi-pendentes').textContent = pendentes;
+  document.getElementById('kpi-animais').textContent = appData.animais.length;
+
+  // Alerts
+  const alertsList = document.getElementById('alerts-list');
+  if (!pendentes) {
+    alertsList.innerHTML = '<div class="alert-item"><div class="alert-dot green"></div><div class="alert-text"><strong>Tudo em dia!</strong><span>Nenhuma revacinação pendente</span></div><span class="alert-badge badge-green">OK</span></div>';
+  } else {
+    let html = '';
+    vencidas.slice(0,3).forEach(v => {
+      html += `<div class="alert-item"><div class="alert-dot red"></div><div class="alert-text"><strong>${v.animal}</strong><span>${v.vacina} · venceu em ${fmtDate(v.proximo)}</span></div><span class="alert-badge badge-red">Vencida</span></div>`;
+    });
+    proximas.slice(0,3).forEach(v => {
+      html += `<div class="alert-item"><div class="alert-dot amber"></div><div class="alert-text"><strong>${v.animal}</strong><span>${v.vacina} · vence em ${fmtDate(v.proximo)}</span></div><span class="alert-badge badge-amber">30 dias</span></div>`;
+    });
+    alertsList.innerHTML = html;
+  }
+
+  // Today agenda
+  const todayAgenda = document.getElementById('today-agenda');
+  if (!todayC.length) {
+    todayAgenda.innerHTML = '<div style="text-align:center;padding:16px 0;color:var(--muted);font-size:14px">Nenhuma consulta agendada para hoje</div>';
+  } else {
+    todayAgenda.innerHTML = todayC.map(c => agendaItemHTML(c)).join('');
+  }
+
+  // Setup warning
+  document.getElementById('setup-warn').style.display = SHEETS_URL ? 'none' : 'flex';
+}
+
+function normDate(s) {
+  const d = parseDate(s);
+  if (!d) return '';
+  return d.toISOString().split('T')[0];
+}
+
+function agendaItemHTML(c) {
+  const type = (c.tipo||'').toLowerCase().replace(/\s/g,'-').replace('vacinação','vacina').replace('consulta-geral','consulta').replace('emergência','emergencia');
+  const tc = type.includes('vacin') ? 'vacina' : type.includes('retorno') ? 'retorno' : type.includes('emerg') ? 'emergencia' : 'consulta';
+  const labels = {consulta:'Consulta',vacina:'Vacinação',retorno:'Retorno',emergencia:'Emergência'};
+  return `<div class="agenda-item">
+    <div class="agenda-time">${c.hora||'—'}</div>
+    <div class="agenda-line line-${tc}"></div>
+    <div class="agenda-info">
+      <div class="agenda-animal">${c.animal||'—'}</div>
+      <div class="agenda-detail">${c.obs||c.tipo||''}</div>
+    </div>
+    <span class="agenda-type type-${tc}">${labels[tc]||c.tipo}</span>
+  </div>`;
+}
+
+// ──────────────────────────────────────────────────────────────
+// CALENDAR
+// ──────────────────────────────────────────────────────────────
+function calNav(dir) { calDate.setMonth(calDate.getMonth()+dir); renderCalendar(); }
+
+function renderCalendar() {
+  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  document.getElementById('cal-month-label').textContent = `${meses[calDate.getMonth()]} ${calDate.getFullYear()}`;
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const year = calDate.getFullYear(), month = calDate.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const daysInPrev  = new Date(year, month, 0).getDate();
+
+  // Event days set
+  const eventDays = new Set(appData.consultas.map(c => normDate(c.data)));
+
+  const grid = document.getElementById('cal-grid');
+  const lbls = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  let html = lbls.map(l=>`<div class="cal-day-lbl">${l}</div>`).join('');
+
+  let day = 1, nextDay = 1;
+  for (let i=0; i<42; i++) {
+    let d, cls='cal-day', isOther=false;
+    if (i < firstDay) {
+      d = daysInPrev - firstDay + i + 1; cls+=' other-month'; isOther=true;
+    } else if (day > daysInMonth) {
+      d = nextDay++; cls+=' other-month'; isOther=true;
+    } else {
+      d = day++;
+      const thisDate = new Date(year, month, d);
+      if (thisDate.getTime()===today.getTime()) cls+=' today';
+      // Check events
+      const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      if (eventDays.has(ds)) cls+=' has-event';
+    }
+    html += `<div class="${cls}" onclick="selectDay(${isOther?0:d})">${d}</div>`;
+  }
+  grid.innerHTML = html;
+  renderAgendaList();
+}
+
+function selectDay(d) {
+  if (!d) return;
+  document.querySelectorAll('.cal-day').forEach(el=>el.classList.remove('selected'));
+  event.target.classList.add('selected');
+  const year=calDate.getFullYear(), month=calDate.getMonth();
+  const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  renderAgendaList(ds);
+}
+
+function renderAgendaList(filterDate) {
+  const list = document.getElementById('agenda-list');
+  const year=calDate.getFullYear(), month=calDate.getMonth();
+  let consultas = appData.consultas.filter(c => {
+    const d = parseDate(c.data);
+    return d && d.getFullYear()===year && d.getMonth()===month;
+  });
+  if (filterDate) consultas = consultas.filter(c => normDate(c.data)===filterDate);
+  consultas.sort((a,b)=>(normDate(a.data)+a.hora).localeCompare(normDate(b.data)+b.hora));
+
+  if (!consultas.length) {
+    list.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--muted);font-size:14px">${filterDate?'Nenhuma consulta neste dia':'Nenhuma consulta neste mês'}</div>`;
+    return;
+  }
+
+  let html='', lastDate='';
+  consultas.forEach(c => {
+    const ds = normDate(c.data);
+    if (ds!==lastDate) {
+      const d=parseDate(c.data);
+      const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+      html+=`<div class="agenda-date-header">${dias[d.getDay()]}, ${d.getDate()} de ${['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][d.getMonth()]}</div>`;
+      lastDate=ds;
+    }
+    html+=agendaItemHTML(c);
+  });
+  list.innerHTML=html;
+  document.getElementById('agenda-sub').textContent = filterDate ? fmtDate(filterDate) : `${consultas.length} consulta(s) no mês`;
+}
+
+// ──────────────────────────────────────────────────────────────
+// VACINAS
+// ──────────────────────────────────────────────────────────────
+function renderVacinas(filter='') {
+  const f = filter.toLowerCase();
+  const vacinas = appData.vacinas.filter(v =>
+    !f || v.animal.toLowerCase().includes(f) || v.vacina.toLowerCase().includes(f)
+  );
+  const vencidas=vacinas.filter(v=>v.status==='vencida').length;
+  const proximas=vacinas.filter(v=>v.status==='proxima').length;
+  const ok=vacinas.filter(v=>v.status==='ok').length;
+  document.getElementById('vac-vencidas').textContent=vencidas;
+  document.getElementById('vac-proximas').textContent=proximas;
+  document.getElementById('vac-ok').textContent=ok;
+
+  const statusConf = {
+    vencida: {icon:'🔴', cls:'badge-red',   bg:'#FEE9E7', label:'Vencida'},
+    proxima: {icon:'🟡', cls:'badge-amber', bg:'#FEF5E7', label:'Próximo reforço'},
+    ok:      {icon:'🟢', cls:'badge-green', bg:'#EAF5EE', label:'Em dia'},
+  };
+
+  const list = document.getElementById('vacinas-list');
+  if (!vacinas.length) { list.innerHTML='<div style="text-align:center;padding:24px 0;color:var(--muted)">Nenhuma vacina encontrada</div>'; return; }
+
+  list.innerHTML = vacinas.map(v => {
+    const s = statusConf[v.status]||statusConf.ok;
+    return `<div class="vac-item">
+      <div class="vac-icon" style="background:${s.bg}">${s.icon}</div>
+      <div class="vac-info">
+        <div class="vac-name">${v.animal}</div>
+        <div class="vac-detail">${v.vacina}</div>
+        <div class="vac-detail">Aplicada: ${fmtDate(v.data_aplic)}</div>
+      </div>
+      <div class="vac-status">
+        <span class="alert-badge ${s.cls}">${s.label}</span>
+        <div class="vac-date" style="margin-top:6px;color:var(--muted)">Reforço: ${fmtDate(v.proximo)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function filterVacinas(v) { renderVacinas(v); }
+
+// ──────────────────────────────────────────────────────────────
+// PREÇOS
+// ──────────────────────────────────────────────────────────────
+function renderPrecos(filter='') {
+  const f = filter.toLowerCase();
+  const body = document.getElementById('precos-body');
+  const precos = appData.precos.filter(p => !f || p.servico.toLowerCase().includes(f) || p.categoria.toLowerCase().includes(f));
+  let html='', lastCat='';
+  precos.forEach(p => {
+    if (p.categoria!==lastCat && !f) {
+      html+=`<tr><td colspan="2"><span class="price-cat">${p.categoria}</span></td></tr>`;
+      lastCat=p.categoria;
+    }
+    const val = typeof p.valor==='number' ? p.valor : parseFloat(String(p.valor).replace(',','.'));
+    html+=`<tr>
+      <td><strong>${p.servico}</strong></td>
+      <td class="price-val">R$ ${isNaN(val)?p.valor:val.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+    </tr>`;
+  });
+  body.innerHTML = html || '<tr><td colspan="2" style="text-align:center;padding:20px;color:var(--muted)">Nenhum serviço encontrado</td></tr>';
+}
+function filterPrecos(v) { renderPrecos(v); }
+
+// ──────────────────────────────────────────────────────────────
+// ATESTADO
+// ──────────────────────────────────────────────────────────────
+function populateCertSelect() {
+  const sel = document.getElementById('cert-animal-select');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— Selecione —</option>' +
+    appData.animais.map(a=>`<option value="${a.id}">${a.nome} (${a.especie} · ${a.tutor||''})</option>`).join('');
+  if (cur) { sel.value=cur; fillCertificate(); }
+  // Set today as default date
+  const dateEl = document.getElementById('cert-data');
+  if (!dateEl.value) dateEl.value = new Date().toISOString().split('T')[0];
+}
+
+function fillCertificate() {
+  const id = document.getElementById('cert-animal-select').value;
+  const animal = appData.animais.find(a=>String(a.id)===String(id));
+  if (!animal) {
+    document.getElementById('cert-nome-display').textContent='[ Selecione um animal ]';
+    ['animal','especie','raca','sexo','tutor','vacina'].forEach(k=>document.getElementById('cert-d-'+k).textContent='—');
+    document.getElementById('cert-sig-tutor').textContent='Assinatura do(a) Tutor(a)';
+    return;
+  }
+  document.getElementById('cert-nome-display').textContent = animal.nome;
+  document.getElementById('cert-d-animal').textContent = animal.nome;
+  document.getElementById('cert-d-especie').textContent = animal.especie||'—';
+  document.getElementById('cert-d-raca').textContent = animal.raca||'—';
+  document.getElementById('cert-d-sexo').textContent = animal.sexo||'—';
+  document.getElementById('cert-d-tutor').textContent = animal.tutor||'—';
+  document.getElementById('cert-sig-tutor').textContent = `Assinatura de: ${animal.tutor||'Tutor(a)'}`;
+  updateCert();
+}
+
+function updateCert() {
+  const vacina = document.getElementById('cert-vacina').value;
+  const data   = document.getElementById('cert-data').value;
+  document.getElementById('cert-d-vacina').textContent = vacina||'—';
+  if (data) {
+    const d = new Date(data+'T12:00:00');
+    const meses=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+    document.getElementById('cert-date-display').textContent =
+      `Rio de Janeiro, ${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// MODAL
+// ──────────────────────────────────────────────────────────────
+function openAddModal() {
+  const sel = document.getElementById('new-animal');
+  sel.innerHTML='<option value="">— Selecione —</option>'+appData.animais.map(a=>`<option value="${a.id}">${a.nome}</option>`).join('');
+  document.getElementById('new-data').value = new Date().toISOString().split('T')[0];
+  document.getElementById('new-hora').value = '09:00';
+  document.getElementById('modal-nova').classList.add('open');
+}
+function closeModal() { document.getElementById('modal-nova').classList.remove('open'); }
+
+document.getElementById('modal-nova').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+
+async function saveConsulta() {
+  const animal = document.getElementById('new-animal');
+  const animalName = animal.options[animal.selectedIndex]?.text?.split(' (')[0] || '';
+  const data  = document.getElementById('new-data').value;
+  const hora  = document.getElementById('new-hora').value;
+  const tipo  = document.getElementById('new-tipo').value;
+  const obs   = document.getElementById('new-obs').value;
+
+  if (!animalName || !data) { showToast('Preencha animal e data'); return; }
+
+  const consulta = { data, hora, animal: animalName, tipo, obs };
+  appData.consultas.push(consulta);
+
+  // Save to Sheets if configured
+  if (SHEETS_URL) {
+    try {
+      await fetch(SHEETS_URL, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ sheet:'Consultas', row:[null, animal.value, animalName, data, hora, tipo, '', '', obs, '', ''] })
+      });
+      showToast('Consulta salva no Google Sheets ✓');
+    } catch(e) { showToast('Salvo localmente (Sheets offline)'); }
+  } else {
+    showToast('Consulta adicionada ✓ (configure o Sheets para sincronizar)');
+  }
+
+  closeModal();
+  updateDashboard();
+  if (document.getElementById('screen-agenda').classList.contains('active')) renderCalendar();
+}
+
+// ──────────────────────────────────────────────────────────────
+// CONFIG
+// ──────────────────────────────────────────────────────────────
+async function testConnection() {
+  const url = document.getElementById('sheets-url').value.trim();
+  const status = document.getElementById('conn-status');
+  if (!url) { status.textContent='Cole a URL primeiro'; status.className='status-error'; return; }
+  status.textContent='Testando…'; status.className='status-idle';
+  try {
+    const res = await fetch(`${url}?sheet=Consultas`);
+    const json = await res.json();
+    if (json.data !== undefined) {
+      status.textContent=`✓ Conectado! ${json.data.length} registros`;
+      status.className='status-ok';
+    } else { throw new Error(); }
+  } catch(e) {
+    status.textContent='✗ Erro de conexão – verifique a URL e as permissões';
+    status.className='status-error';
+  }
+}
+
+function saveConfig() {
+  SHEETS_URL = document.getElementById('sheets-url').value.trim();
+  localStorage.setItem('sheets_url', SHEETS_URL);
+  showToast('Configuração salva!');
+  loadFromSheets();
+}
+
+function copyScript() {
+  const script = `function doGet(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(e.parameter.sheet || 'Consultas');
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0];
+  var rows = data.slice(1).map(function(row) {
+    var obj = {};
+    headers.forEach(function(h, i) { obj[h] = row[i]; });
+    return obj;
+  });
+  return ContentService
+    .createTextOutput(JSON.stringify({data: rows}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var body = JSON.parse(e.postData.contents);
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(body.sheet);
+  sheet.appendRow(body.row);
+  return ContentService
+    .createTextOutput(JSON.stringify({ok: true}))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+  navigator.clipboard.writeText(script).then(()=>showToast('Script copiado!'));
+}
+
+// ──────────────────────────────────────────────────────────────
+// TOAST
+// ──────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+// ──────────────────────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  loadFromSheets();
+  renderPrecos();
+  const dateEl = document.getElementById('cert-data');
+  dateEl.value = new Date().toISOString().split('T')[0];
+  updateCert();
+});
+</script>
+</body>
+</html>
