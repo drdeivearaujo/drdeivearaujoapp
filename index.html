@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr. Deive Araujo - Sistema Veterinário</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --navy:#1B3A6B;--navy-dark:#0F2347;--navy-light:#E8EEF8;
+    --green:#4A9D5B;--green-light:#E8F5EB;--green-dark:#2D6A3A;
+    --gold:#C9A227;--gold-light:#FDF6E3;
+    --coral:#D45E3C;--coral-light:#FAEAE5;
+    --bg:#F4F6FA;--card:#fff;--border:rgba(27,58,107,0.12);
+    --text:#1B3A6B;--muted:#7A8BA8;--sidebar-w:230px;
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;font-size:14px}
+
+  /* SIDEBAR */
+  #sidebar{width:var(--sidebar-w);background:linear-gradient(170deg,var(--navy-dark) 0%,var(--navy) 100%);min-height:100vh;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;bottom:0;z-index:10}
+  .logo-section{padding:20px 16px 18px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;align-items:center;gap:10px}
+  .logo-section img{width:80px;height:80px;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3))}
+  .logo-text{text-align:center}
+  .logo-text .name{font-family:'Playfair Display',serif;font-size:14px;color:#fff;font-weight:600;line-height:1.3}
+  .logo-text .subtitle{font-size:10px;color:rgba(255,255,255,0.55);margin-top:2px;font-weight:400}
+  .logo-text .crmv{font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px}
+  .nav{padding:12px 0;flex:1;overflow-y:auto}
+  .nav-section{padding:8px 16px 4px;font-size:9.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1.2px;font-weight:500}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;color:rgba(255,255,255,0.65);font-size:13px;transition:all .15s;border-left:2px solid transparent;user-select:none}
+  .nav-item:hover{background:rgba(255,255,255,0.07);color:#fff}
+  .nav-item.active{background:rgba(255,255,255,0.12);color:#fff;border-left-color:#7EC8A0;font-weight:500}
+  .nav-item i{font-size:16px;opacity:.85}
+  .nav-item.active i{opacity:1;color:#7EC8A0}
+
+  /* MAIN */
+  #main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+  .topbar{background:var(--card);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}
+  .topbar h2{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--navy)}
+  .topbar-badge{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--green-dark);background:var(--green-light);padding:5px 12px;border-radius:20px;cursor:pointer;border:1px solid rgba(74,157,91,0.2)}
+  .topbar-badge i{font-size:14px;color:var(--green)}
+
+  .content{padding:20px 24px;flex:1}
+
+  /* STATS */
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+  .stat-card::before{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:0 14px 0 60px;opacity:.08}
+  .stat-card.navy::before{background:var(--navy)}
+  .stat-card.green::before{background:var(--green)}
+  .stat-card.gold::before{background:var(--gold)}
+  .stat-card.coral::before{background:var(--coral)}
+  .stat-card .label{font-size:11px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .stat-card .label i{font-size:15px}
+  .stat-card.navy .label i{color:var(--navy)}
+  .stat-card.green .label i{color:var(--green)}
+  .stat-card.gold .label i{color:var(--gold)}
+  .stat-card.coral .label i{color:var(--coral)}
+  .stat-card .val{font-family:'Playfair Display',serif;font-size:28px;font-weight:600;color:var(--navy)}
+  .stat-card .sub{font-size:11px;color:var(--muted);margin-top:3px}
+
+  /* PANELS */
+  .panel{display:none}.panel.active{display:block}
+
+  /* TABLE */
+  .table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  .table-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+  .table-header h3{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--navy)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--text);font-family:'DM Sans',sans-serif;transition:all .15s}
+  .btn:hover{background:var(--bg)}
+  .btn-primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .btn-primary:hover{background:var(--navy-dark)}
+  .btn-green{background:var(--green);color:#fff;border-color:var(--green)}
+  .btn-green:hover{background:var(--green-dark)}
+  .btn-sm{padding:5px 10px;font-size:12px}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:11px;color:var(--muted);text-align:left;padding:10px 18px;background:var(--navy-light);font-weight:500;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+  td{padding:11px 18px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text)}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#f8fafd}
+  .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
+  .badge-navy{background:var(--navy-light);color:var(--navy)}
+  .badge-green{background:var(--green-light);color:var(--green-dark)}
+  .badge-gold{background:var(--gold-light);color:var(--gold)}
+  .badge-coral{background:var(--coral-light);color:var(--coral)}
+
+  /* FORM */
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  .form-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+  .form-grid.cols-1{grid-template-columns:1fr}
+  .form-group{display:flex;flex-direction:column;gap:5px}
+  .form-group label{font-size:12px;color:var(--muted);font-weight:500}
+  .form-group input,.form-group select,.form-group textarea{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:border-color .15s}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(27,58,107,0.08)}
+  .form-group textarea{resize:vertical;min-height:70px}
+
+  /* MODAL */
+  .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:50;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+  .modal-backdrop.open{display:flex}
+  .modal{background:var(--card);border-radius:18px;padding:26px;width:580px;max-width:95vw;max-height:88vh;overflow-y:auto;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.15)}
+  .modal h3{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--navy);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+  .modal h3 i{color:var(--green);font-size:20px}
+  .modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+
+  /* STATUS */
+  #statusBar{display:none;position:fixed;bottom:20px;right:24px;background:var(--navy-dark);color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:100;align-items:center;gap:8px;opacity:0;transition:opacity .3s}
+  #statusBar.show{opacity:1}
+  #statusBar.success{background:var(--green-dark)}
+  #statusBar.error{background:#9B3030}
+
+  /* SEARCH */
+  .search-bar{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 12px;margin-bottom:14px}
+  .search-bar i{color:var(--muted);font-size:16px}
+  .search-bar input{border:none;background:none;outline:none;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);flex:1}
+
+  /* SETUP */
+  .setup-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:540px;margin:0 auto}
+  .setup-card h3{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--navy);margin-bottom:8px}
+  .setup-card p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px}
+  .step-list{list-style:none;counter-reset:steps;display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+  .step-list li{counter-increment:steps;display:flex;gap:12px;align-items:flex-start;font-size:13px;line-height:1.5}
+  .step-list li::before{content:counter(steps);display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:600;flex-shrink:0;margin-top:1px}
+  .code-block{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:monospace;font-size:11px;color:var(--text);margin:6px 0;word-break:break-all;max-height:200px;overflow-y:auto}
+
+  /* DASHBOARD */
+  .dash-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+  .mini-list{list-style:none;display:flex;flex-direction:column;gap:2px}
+  .mini-list li{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+  .mini-list li:last-child{border-bottom:none}
+  .mini-list .name{font-weight:500;color:var(--navy)}
+  .mini-list .detail{color:var(--muted);font-size:12px}
+
+  /* AGENDA */
+  .agenda-day{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px}
+  .agenda-day-header{padding:10px 18px;background:linear-gradient(90deg,var(--navy-light),#fff);display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--navy);border-bottom:1px solid var(--border)}
+  .agenda-item{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid var(--border)}
+  .agenda-item:last-child{border-bottom:none}
+  .agenda-time{font-size:12px;color:var(--muted);min-width:44px;font-weight:600}
+  .agenda-info .pet{font-size:13px;font-weight:500;color:var(--navy)}
+  .agenda-info .sub{font-size:12px;color:var(--muted)}
+
+  /* HEADER LOGO AREA */
+  .page-header{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+  .page-header-icon{width:36px;height:36px;background:var(--navy-light);border-radius:10px;display:flex;align-items:center;justify-content:center}
+  .page-header-icon i{color:var(--navy);font-size:18px}
+
+  @media(max-width:700px){
+    #sidebar{width:54px}.logo-section img{width:36px;height:36px}.logo-text{display:none}
+    .nav-item span,.nav-section{display:none}
+    #main{margin-left:54px}.stats-row{grid-template-columns:1fr 1fr}
+    .form-grid{grid-template-columns:1fr}.form-grid.cols-3{grid-template-columns:1fr}
+    .dash-row{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="logo-section">
+    <img src="data:image/png;base64,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" alt="Dr. Deive Araujo" style="width:80px;height:80px;object-fit:contain">
+    <div class="logo-text">
+      <div class="name">Dr. Deive Araujo</div>
+      <div class="subtitle">Médico Veterinário</div>
+      <div class="crmv">CRMV-RJ 22934</div>
+    </div>
+  </div>
+  <div class="nav">
+    <div class="nav-section">Principal</div>
+    <div class="nav-item active" data-panel="dashboard"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></div>
+    <div class="nav-item" data-panel="agenda"><i class="ti ti-calendar"></i><span>Agenda</span></div>
+
+    <div class="nav-section" style="margin-top:8px">Cadastros</div>
+    <div class="nav-item" data-panel="pacientes"><i class="ti ti-paw"></i><span>Pacientes</span></div>
+    <div class="nav-item" data-panel="tutores"><i class="ti ti-users"></i><span>Tutores</span></div>
+    <div class="nav-item" data-panel="consultas"><i class="ti ti-clipboard-list"></i><span>Consultas</span></div>
+    <div class="nav-item" data-panel="vacinas"><i class="ti ti-vaccine"></i><span>Vacinas</span></div>
+    <div class="nav-item" data-panel="produtos"><i class="ti ti-package"></i><span>Produtos</span></div>
+
+    <div class="nav-section" style="margin-top:8px">Relatórios</div>
+    <div class="nav-item" data-panel="historico"><i class="ti ti-history"></i><span>Histórico</span></div>
+    <div class="nav-item" data-panel="financeiro"><i class="ti ti-report-money"></i><span>Financeiro</span></div>
+
+    <div class="nav-section" style="margin-top:8px">Config.</div>
+    <div class="nav-item" data-panel="setup"><i class="ti ti-settings"></i><span>Google Sheets</span></div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="topbar">
+    <h2 id="pageTitle">Dashboard</h2>
+    <div class="topbar-badge" id="sheetsStatus" onclick="goSetup()">
+      <i class="ti ti-brand-google"></i>
+      <span id="sheetsStatusText">Configurar Sheets</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="stats-row">
+        <div class="stat-card navy">
+          <div class="label"><i class="ti ti-paw"></i> Pacientes</div>
+          <div class="val" id="stat-pacientes">0</div>
+          <div class="sub">cadastrados</div>
+        </div>
+        <div class="stat-card green">
+          <div class="label"><i class="ti ti-users"></i> Tutores</div>
+          <div class="val" id="stat-tutores">0</div>
+          <div class="sub">cadastrados</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="label"><i class="ti ti-calendar"></i> Consultas hoje</div>
+          <div class="val" id="stat-consultas">0</div>
+          <div class="sub">agendadas</div>
+        </div>
+        <div class="stat-card coral">
+          <div class="label"><i class="ti ti-vaccine"></i> Vacinas vencendo</div>
+          <div class="val" id="stat-vacinas">0</div>
+          <div class="sub">próx. 30 dias</div>
+        </div>
+      </div>
+      <div class="dash-row">
+        <div class="table-card">
+          <div class="table-header"><h3>Próximas consultas</h3></div>
+          <ul class="mini-list" id="dash-consultas" style="padding:0 18px">
+            <li style="color:var(--muted);font-size:13px;padding:18px 0">Nenhuma consulta agendada</li>
+          </ul>
+        </div>
+        <div class="table-card">
+          <div class="table-header"><h3>Últimos pacientes</h3></div>
+          <ul class="mini-list" id="dash-pacientes" style="padding:0 18px">
+            <li style="color:var(--muted);font-size:13px;padding:18px 0">Nenhum paciente cadastrado</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- AGENDA -->
+    <div class="panel" id="panel-agenda">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+        <button class="btn btn-primary" onclick="openModal('agenda')"><i class="ti ti-plus"></i> Agendar</button>
+      </div>
+      <div id="agendaList"></div>
+    </div>
+
+    <!-- PACIENTES -->
+    <div class="panel" id="panel-pacientes">
+      <div class="search-bar"><i class="ti ti-search"></i><input type="text" placeholder="Buscar paciente..." id="searchPacientes" oninput="filterTable('pacientes')"></div>
+      <div class="table-card">
+        <div class="table-header"><h3>Pacientes</h3><button class="btn btn-primary" onclick="openModal('paciente')"><i class="ti ti-plus"></i> Novo</button></div>
+        <div style="overflow-x:auto"><table><thead><tr><th>Nome</th><th>Espécie</th><th>Raça</th><th>Idade</th><th>Tutor</th><th>Ações</th></tr></thead>
+        <tbody id="tbody-pacientes"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Nenhum paciente cadastrado</td></tr></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- TUTORES -->
+    <div class="panel" id="panel-tutores">
+      <div class="search-bar"><i class="ti ti-search"></i><input type="text" placeholder="Buscar tutor..." id="searchTutores" oninput="filterTable('tutores')"></div>
+      <div class="table-card">
+        <div class="table-header"><h3>Tutores</h3><button class="btn btn-primary" onclick="openModal('tutor')"><i class="ti ti-plus"></i> Novo</button></div>
+        <div style="overflow-x:auto"><table><thead><tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>E-mail</th><th>Endereço</th><th>Ações</th></tr></thead>
+        <tbody id="tbody-tutores"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Nenhum tutor cadastrado</td></tr></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- CONSULTAS -->
+    <div class="panel" id="panel-consultas">
+      <div class="search-bar"><i class="ti ti-search"></i><input type="text" placeholder="Buscar consulta..." id="searchConsultas" oninput="filterTable('consultas')"></div>
+      <div class="table-card">
+        <div class="table-header"><h3>Consultas</h3><button class="btn btn-primary" onclick="openModal('consulta')"><i class="ti ti-plus"></i> Nova</button></div>
+        <div style="overflow-x:auto"><table><thead><tr><th>Data/Hora</th><th>Paciente</th><th>Tipo</th><th>Diagnóstico</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody id="tbody-consultas"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">Nenhuma consulta registrada</td></tr></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- VACINAS -->
+    <div class="panel" id="panel-vacinas">
+      <div class="search-bar"><i class="ti ti-search"></i><input type="text" placeholder="Buscar vacina..." id="searchVacinas" oninput="filterTable('vacinas')"></div>
+      <div class="table-card">
+        <div class="table-header"><h3>Vacinas</h3><button class="btn btn-primary" onclick="openModal('vacina')"><i class="ti ti-plus"></i> Registrar</button></div>
+        <div style="overflow-x:auto"><table><thead><tr><th>Paciente</th><th>Vacina</th><th>Data</th><th>Próxima dose</th><th>Lote</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody id="tbody-vacinas"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">Nenhuma vacina registrada</td></tr></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- PRODUTOS -->
+    <div class="panel" id="panel-produtos">
+      <div class="search-bar"><i class="ti ti-search"></i><input type="text" placeholder="Buscar produto..." id="searchProdutos" oninput="filterTable('produtos')"></div>
+      <div class="table-card">
+        <div class="table-header"><h3>Produtos e Serviços</h3><button class="btn btn-primary" onclick="openModal('produto')"><i class="ti ti-plus"></i> Novo</button></div>
+        <div style="overflow-x:auto"><table><thead><tr><th>Nome</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Ações</th></tr></thead>
+        <tbody id="tbody-produtos"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">Nenhum produto cadastrado</td></tr></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div class="panel" id="panel-historico">
+      <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center">
+        <select id="historicoPaciente" onchange="loadHistorico()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;flex:1;max-width:280px">
+          <option value="">Selecione um paciente...</option>
+        </select>
+        <span style="color:var(--muted);font-size:13px">para ver o histórico completo</span>
+      </div>
+      <div id="historicoContent">
+        <div class="table-card"><div style="padding:32px;text-align:center;color:var(--muted);font-size:13px">Selecione um paciente para ver o histórico</div></div>
+      </div>
+    </div>
+
+    <!-- FINANCEIRO -->
+    <div class="panel" id="panel-financeiro">
+      <div class="stats-row" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="stat-card green"><div class="label"><i class="ti ti-trending-up"></i> Faturamento total</div><div class="val" id="fin-total">R$ 0</div><div class="sub">todas as consultas</div></div>
+        <div class="stat-card navy"><div class="label"><i class="ti ti-calendar-stats"></i> Mês atual</div><div class="val" id="fin-mes">R$ 0</div><div class="sub" id="fin-mes-label">-</div></div>
+        <div class="stat-card gold"><div class="label"><i class="ti ti-clipboard-list"></i> Consultas realizadas</div><div class="val" id="fin-consultas">0</div><div class="sub">total</div></div>
+      </div>
+      <div class="table-card" style="margin-top:16px">
+        <div class="table-header"><h3>Extrato de consultas</h3></div>
+        <div style="overflow-x:auto"><table><thead><tr><th>Data</th><th>Paciente</th><th>Tipo</th><th>Valor</th><th>Status</th></tr></thead>
+        <tbody id="tbody-financeiro"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">Nenhum registro</td></tr></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- SETUP -->
+    <div class="panel" id="panel-setup">
+      <div class="setup-card">
+        <h3><i class="ti ti-brand-google" style="color:var(--navy)"></i> Conectar Google Sheets</h3>
+        <p>Configure a integração para salvar e sincronizar todos os dados da clínica no Google Sheets automaticamente.</p>
+        <ol class="step-list">
+          <li>Acesse <strong>script.google.com</strong> e crie um novo projeto</li>
+          <li>Cole o código abaixo no editor e salve (Ctrl+S)</li>
+          <li>Clique em <strong>Implantar → Nova implantação</strong> → App da Web → Acesso: Qualquer pessoa</li>
+          <li>Copie a URL gerada e cole no campo abaixo</li>
+        </ol>
+        <div style="margin-bottom:14px">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500">Código Apps Script:</div>
+          <div class="code-block" id="appsScriptCode">// ============================================
+// Apps Script FINAL — cole e reimplante
+// ============================================
+
+function doPost(e) {
+  var result = processRequest(e.parameter, e.postData);
+  return ContentService
+    .createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  var result = processRequest(e.parameter, null);
+  // HtmlService permite CORS automático para GET
+  return HtmlService.createHtmlOutput(JSON.stringify(result));
+}
+
+function processRequest(params, postData) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var action = 'read';
+    var sheetName = '';
+    var rowData = null;
+
+    // Ler parâmetros do GET
+    if (params) {
+      action    = params.action    || 'read';
+      sheetName = params.sheet     || '';
+      rowData   = params.row ? JSON.parse(params.row) : null;
+    }
+
+    // Sobrescrever com POST body se existir
+    if (postData && postData.contents) {
+      try {
+        var body  = JSON.parse(postData.contents);
+        action    = body.action || action;
+        sheetName = body.sheet  || sheetName;
+        rowData   = body.row    || rowData;
+      } catch(ex) {}
+    }
+
+    if (!sheetName) return { ok: false, error: 'sheet ausente' };
+
+    var sheet = ss.getSheetByName(sheetName);
+
+    if (action === 'append') {
+      if (!sheet) sheet = ss.insertSheet(sheetName);
+      if (rowData) sheet.appendRow(rowData);
+      return { ok: true, msg: 'Salvo' };
+    }
+
+    if (action === 'read') {
+      if (!sheet) return { ok: true, data: [] };
+      return { ok: true, data: sheet.getDataRange().getValues() };
+    }
+
+    return { ok: false, error: 'acao invalida' };
+
+  } catch(err) {
+    return { ok: false, error: err.message };
+  }
+}</div>
+          <button class="btn btn-sm" onclick="copyCode()" style="margin-top:6px"><i class="ti ti-copy"></i> Copiar código</button>
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+          <label>URL da implantação</label>
+          <input type="text" id="sheetsUrl" placeholder="https://script.google.com/macros/s/..." value="">
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+          <label>Modo de dados</label>
+          <select id="dataMode"><option value="local" selected>Local (dados no navegador)</option><option value="sheets">Google Sheets (sincronizado)</option></select>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary" onclick="saveSetup()"><i class="ti ti-check"></i> Salvar</button>
+          <button class="btn" onclick="testConnection()"><i class="ti ti-wifi"></i> Testar conexão</button>
+        </div>
+        <div id="setupMsg" style="margin-top:12px;font-size:13px;display:none"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODAIS -->
+<div class="modal-backdrop" id="modal-backdrop" onclick="closeModal(event)">
+
+  <!-- Paciente -->
+  <div class="modal" id="modal-paciente" style="display:none" onclick="e=>e.stopPropagation()">
+    <h3><i class="ti ti-paw"></i> Cadastro de Paciente</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Nome *</label><input id="p_nome" placeholder="Ex: Rex"></div>
+      <div class="form-group"><label>Espécie *</label><select id="p_especie"><option>Cão</option><option>Gato</option><option>Pássaro</option><option>Coelho</option><option>Hamster</option><option>Réptil</option><option>Outro</option></select></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Raça</label><input id="p_raca" placeholder="Ex: Labrador"></div>
+      <div class="form-group"><label>Sexo</label><select id="p_sexo"><option>Macho</option><option>Fêmea</option></select></div>
+    </div>
+    <div class="form-grid cols-3">
+      <div class="form-group"><label>Nascimento</label><input type="date" id="p_nasc"></div>
+      <div class="form-group"><label>Cor/Pelagem</label><input id="p_cor" placeholder="Ex: Caramelo"></div>
+      <div class="form-group"><label>Peso (kg)</label><input type="number" step="0.1" id="p_peso"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Tutor *</label><select id="p_tutor"><option value="">Selecione...</option></select></div>
+      <div class="form-group"><label>Microchip</label><input id="p_chip" placeholder="Nº do microchip"></div>
+    </div>
+    <div class="form-grid cols-1">
+      <div class="form-group"><label>Observações</label><textarea id="p_obs" placeholder="Alergias, condições especiais..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="savePaciente()"><i class="ti ti-check"></i> Salvar</button>
+    </div>
+  </div>
+
+  <!-- Tutor -->
+  <div class="modal" id="modal-tutor" style="display:none" onclick="e=>e.stopPropagation()">
+    <h3><i class="ti ti-user"></i> Cadastro de Tutor</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Nome completo *</label><input id="t_nome" placeholder="Nome do responsável"></div>
+      <div class="form-group"><label>CPF</label><input id="t_cpf" placeholder="000.000.000-00"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Telefone *</label><input id="t_tel" placeholder="(21) 99999-9999"></div>
+      <div class="form-group"><label>E-mail</label><input type="email" id="t_email" placeholder="email@exemplo.com"></div>
+    </div>
+    <div class="form-grid cols-1">
+      <div class="form-group"><label>Endereço</label><input id="t_end" placeholder="Rua, número, bairro, cidade"></div>
+    </div>
+    <div class="form-grid cols-1">
+      <div class="form-group"><label>Observações</label><textarea id="t_obs"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveTutor()"><i class="ti ti-check"></i> Salvar</button>
+    </div>
+  </div>
+
+  <!-- Consulta -->
+  <div class="modal" id="modal-consulta" style="display:none" onclick="e=>e.stopPropagation()">
+    <h3><i class="ti ti-clipboard-list"></i> Registrar Consulta</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Paciente *</label><select id="c_paciente"><option value="">Selecione...</option></select></div>
+      <div class="form-group"><label>Tipo *</label><select id="c_tipo"><option>Consulta geral</option><option>Retorno</option><option>Emergência</option><option>Cirurgia</option><option>Exame</option><option>Vacinação</option><option>Banho e tosa</option></select></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Data e hora *</label><input type="datetime-local" id="c_data"></div>
+      <div class="form-group"><label>Veterinário</label><input id="c_vet" placeholder="Dr. Deive Araujo" value="Dr. Deive Araujo"></div>
+    </div>
+    <div class="form-grid cols-1">
+      <div class="form-group"><label>Queixa / Motivo</label><textarea id="c_queixa" placeholder="Motivo da consulta..."></textarea></div>
+    </div>
+    <div class="form-grid cols-1">
+      <div class="form-group"><label>Diagnóstico</label><textarea id="c_diag"></textarea></div>
+    </div>
+    <div class="form-grid cols-1">
+      <div class="form-group"><label>Tratamento / Prescrição</label><textarea id="c_trat" placeholder="Medicamentos, dosagens..."></textarea></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Valor (R$)</label><input type="number" step="0.01" id="c_valor" placeholder="0,00"></div>
+      <div class="form-group"><label>Status</label><select id="c_status"><option>Agendado</option><option>Realizado</option><option>Cancelado</option></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveConsulta()"><i class="ti ti-check"></i> Salvar</button>
+    </div>
+  </div>
+
+  <!-- Vacina -->
+  <div class="modal" id="modal-vacina" style="display:none" onclick="e=>e.stopPropagation()">
+    <h3><i class="ti ti-vaccine"></i> Registrar Vacina</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Paciente *</label><select id="v_paciente"><option value="">Selecione...</option></select></div>
+      <div class="form-group"><label>Vacina *</label><input id="v_nome" placeholder="Ex: V10, Antirrábica..."></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Data de aplicação *</label><input type="date" id="v_data"></div>
+      <div class="form-group"><label>Próxima dose</label><input type="date" id="v_proxima"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Lote</label><input id="v_lote"></div>
+      <div class="form-group"><label>Fabricante</label><input id="v_fab"></div>
+    </div>
+    <div class="form-grid cols-1">
+      <div class="form-group"><label>Observações</label><textarea id="v_obs"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveVacina()"><i class="ti ti-check"></i> Salvar</button>
+    </div>
+  </div>
+
+  <!-- Produto -->
+  <div class="modal" id="modal-produto" style="display:none" onclick="e=>e.stopPropagation()">
+    <h3><i class="ti ti-package"></i> Produto / Serviço</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Nome *</label><input id="pr_nome"></div>
+      <div class="form-group"><label>Categoria</label><select id="pr_cat"><option>Medicamento</option><option>Vacina</option><option>Ração</option><option>Acessório</option><option>Serviço</option><option>Exame</option><option>Cirurgia</option><option>Outros</option></select></div>
+    </div>
+    <div class="form-grid cols-3">
+      <div class="form-group"><label>Preço (R$) *</label><input type="number" step="0.01" id="pr_preco"></div>
+      <div class="form-group"><label>Estoque</label><input type="number" id="pr_estoque" placeholder="0"></div>
+      <div class="form-group"><label>Unidade</label><select id="pr_unidade"><option>un</option><option>caixa</option><option>frasco</option><option>kg</option><option>ml</option><option>serviço</option></select></div>
+    </div>
+    <div class="form-grid cols-1">
+      <div class="form-group"><label>Descrição</label><textarea id="pr_desc"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveProduto()"><i class="ti ti-check"></i> Salvar</button>
+    </div>
+  </div>
+
+  <!-- Agenda -->
+  <div class="modal" id="modal-agenda" style="display:none" onclick="e=>e.stopPropagation()">
+    <h3><i class="ti ti-calendar-plus"></i> Novo Agendamento</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Paciente *</label><select id="ag_paciente"><option value="">Selecione...</option></select></div>
+      <div class="form-group"><label>Tipo *</label><select id="ag_tipo"><option>Consulta geral</option><option>Retorno</option><option>Vacinação</option><option>Emergência</option><option>Cirurgia</option><option>Exame</option><option>Banho e tosa</option></select></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Data e hora *</label><input type="datetime-local" id="ag_data"></div>
+      <div class="form-group"><label>Veterinário</label><input id="ag_vet" value="Dr. Deive Araujo"></div>
+    </div>
+    <div class="form-grid cols-1">
+      <div class="form-group"><label>Observações</label><textarea id="ag_obs"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveAgenda()"><i class="ti ti-check"></i> Agendar</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="statusBar"><i class="ti ti-check"></i><span id="statusMsg"></span></div>
+
+<script>
+var DB={pacientes:JSON.parse(localStorage.getItem('da_pacientes')||'[]'),tutores:JSON.parse(localStorage.getItem('da_tutores')||'[]'),consultas:JSON.parse(localStorage.getItem('da_consultas')||'[]'),vacinas:JSON.parse(localStorage.getItem('da_vacinas')||'[]'),produtos:JSON.parse(localStorage.getItem('da_produtos')||'[]'),agenda:JSON.parse(localStorage.getItem('da_agenda')||'[]')};
+var SHEETS_URL=localStorage.getItem('da_sheetsUrl')||'';
+var DATA_MODE=localStorage.getItem('da_dataMode')||'local';
+
+function saveLocal(){['pacientes','tutores','consultas','vacinas','produtos','agenda'].forEach(k=>localStorage.setItem('da_'+k,JSON.stringify(DB[k])));}
+
+function showStatus(msg,type){
+  var bar=document.getElementById('statusBar');
+  bar.className='show '+(type||'success');
+  document.getElementById('statusMsg').textContent=msg;
+  bar.style.display='flex';
+  setTimeout(()=>{bar.className='';setTimeout(()=>{bar.style.display='none'},300)},2800);
+}
+
+// NAV
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+    item.classList.add('active');
+    var panel=item.dataset.panel;
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('panel-'+panel).classList.add('active');
+    var titles={dashboard:'Dashboard',agenda:'Agenda',pacientes:'Pacientes',tutores:'Tutores',consultas:'Consultas',vacinas:'Vacinas',produtos:'Produtos',historico:'Histórico do Paciente',financeiro:'Financeiro',setup:'Google Sheets'};
+    document.getElementById('pageTitle').textContent=titles[panel]||panel;
+    if(panel==='dashboard')updateDashboard();
+    if(panel==='historico')populateHistoricoSelect();
+    if(panel==='financeiro')loadFinanceiro();
+    if(panel==='agenda')renderAgenda();
+    if(['pacientes','tutores','consultas','vacinas','produtos'].includes(panel))renderTable(panel);
+    if(panel==='setup')loadSetup();
+  });
+});
+
+function goSetup(){document.querySelector('[data-panel="setup"]').click();}
+
+// MODAL
+function openModal(type){
+  var bd=document.getElementById('modal-backdrop');bd.classList.add('open');
+  document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
+  var m=document.getElementById('modal-'+type);if(m){m.style.display='block';}
+  if(['paciente','consulta','vacina','agenda'].includes(type))populateSelects();
+}
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('modal-backdrop'))return;
+  document.getElementById('modal-backdrop').classList.remove('open');
+  document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
+}
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>e.stopPropagation()));
+
+function populateSelects(){
+  var ts=document.getElementById('p_tutor');
+  if(ts){ts.innerHTML='<option value="">Selecione...</option>';DB.tutores.forEach(t=>{var o=document.createElement('option');o.value=t.nome;o.textContent=t.nome;ts.appendChild(o);});}
+  ['c_paciente','v_paciente','ag_paciente'].forEach(id=>{
+    var s=document.getElementById(id);if(!s)return;
+    s.innerHTML='<option value="">Selecione...</option>';DB.pacientes.forEach(p=>{var o=document.createElement('option');o.value=p.nome;o.textContent=p.nome+' ('+p.especie+')';s.appendChild(o);});
+  });
+}
+
+// SAVES
+function savePaciente(){
+  var nome=document.getElementById('p_nome').value.trim();if(!nome){showStatus('Nome é obrigatório!','error');return;}
+  var row={id:Date.now(),nome,especie:document.getElementById('p_especie').value,raca:document.getElementById('p_raca').value,sexo:document.getElementById('p_sexo').value,nasc:document.getElementById('p_nasc').value,cor:document.getElementById('p_cor').value,peso:document.getElementById('p_peso').value,tutor:document.getElementById('p_tutor').value,chip:document.getElementById('p_chip').value,obs:document.getElementById('p_obs').value,data:new Date().toISOString()};
+  DB.pacientes.push(row);saveLocal();syncToSheets('Pacientes',[row.id,row.nome,row.especie,row.raca,row.sexo,row.nasc,row.cor,row.peso,row.tutor,row.chip,row.obs,row.data]);
+  closeModal();renderTable('pacientes');updateDashboard();showStatus('Paciente cadastrado!');
+  ['p_nome','p_raca','p_chip','p_obs','p_peso','p_cor'].forEach(id=>document.getElementById(id).value='');
+}
+function saveTutor(){
+  var nome=document.getElementById('t_nome').value.trim();if(!nome){showStatus('Nome é obrigatório!','error');return;}
+  var row={id:Date.now(),nome,cpf:document.getElementById('t_cpf').value,tel:document.getElementById('t_tel').value,email:document.getElementById('t_email').value,end:document.getElementById('t_end').value,obs:document.getElementById('t_obs').value,data:new Date().toISOString()};
+  DB.tutores.push(row);saveLocal();syncToSheets('Tutores',[row.id,row.nome,row.cpf,row.tel,row.email,row.end,row.obs,row.data]);
+  closeModal();renderTable('tutores');updateDashboard();showStatus('Tutor cadastrado!');
+  ['t_nome','t_cpf','t_tel','t_email','t_end','t_obs'].forEach(id=>document.getElementById(id).value='');
+}
+function saveConsulta(){
+  var pac=document.getElementById('c_paciente').value,data=document.getElementById('c_data').value;
+  if(!pac||!data){showStatus('Paciente e data obrigatórios!','error');return;}
+  var row={id:Date.now(),paciente:pac,tipo:document.getElementById('c_tipo').value,data,vet:document.getElementById('c_vet').value,queixa:document.getElementById('c_queixa').value,diag:document.getElementById('c_diag').value,trat:document.getElementById('c_trat').value,valor:document.getElementById('c_valor').value||'0',status:document.getElementById('c_status').value,criado:new Date().toISOString()};
+  DB.consultas.push(row);saveLocal();syncToSheets('Consultas',[row.id,row.paciente,row.tipo,row.data,row.vet,row.queixa,row.diag,row.trat,row.valor,row.status,row.criado]);
+  closeModal();renderTable('consultas');updateDashboard();showStatus('Consulta registrada!');
+  ['c_queixa','c_diag','c_trat','c_valor'].forEach(id=>document.getElementById(id).value='');
+}
+function saveVacina(){
+  var pac=document.getElementById('v_paciente').value,nome=document.getElementById('v_nome').value.trim();
+  if(!pac||!nome){showStatus('Paciente e vacina obrigatórios!','error');return;}
+  var row={id:Date.now(),paciente:pac,nome,data:document.getElementById('v_data').value,proxima:document.getElementById('v_proxima').value,lote:document.getElementById('v_lote').value,fab:document.getElementById('v_fab').value,obs:document.getElementById('v_obs').value,criado:new Date().toISOString()};
+  DB.vacinas.push(row);saveLocal();syncToSheets('Vacinas',[row.id,row.paciente,row.nome,row.data,row.proxima,row.lote,row.fab,row.obs,row.criado]);
+  closeModal();renderTable('vacinas');updateDashboard();showStatus('Vacina registrada!');
+  ['v_nome','v_data','v_proxima','v_lote','v_fab','v_obs'].forEach(id=>document.getElementById(id).value='');
+}
+function saveProduto(){
+  var nome=document.getElementById('pr_nome').value.trim();if(!nome){showStatus('Nome obrigatório!','error');return;}
+  var row={id:Date.now(),nome,cat:document.getElementById('pr_cat').value,preco:document.getElementById('pr_preco').value||'0',estoque:document.getElementById('pr_estoque').value||'0',unidade:document.getElementById('pr_unidade').value,desc:document.getElementById('pr_desc').value,criado:new Date().toISOString()};
+  DB.produtos.push(row);saveLocal();syncToSheets('Produtos',[row.id,row.nome,row.cat,row.preco,row.estoque,row.unidade,row.desc,row.criado]);
+  closeModal();renderTable('produtos');showStatus('Produto cadastrado!');
+  ['pr_nome','pr_preco','pr_estoque','pr_desc'].forEach(id=>document.getElementById(id).value='');
+}
+function saveAgenda(){
+  var pac=document.getElementById('ag_paciente').value,data=document.getElementById('ag_data').value;
+  if(!pac||!data){showStatus('Paciente e data obrigatórios!','error');return;}
+  var row={id:Date.now(),paciente:pac,tipo:document.getElementById('ag_tipo').value,data,vet:document.getElementById('ag_vet').value,obs:document.getElementById('ag_obs').value,status:'Agendado',valor:'0',queixa:'',diag:'',trat:'',criado:new Date().toISOString()};
+  DB.consultas.push(row);DB.agenda.push(row);saveLocal();syncToSheets('Agenda',[row.id,row.paciente,row.tipo,row.data,row.vet,row.obs,row.status,row.criado]);
+  closeModal();renderAgenda();updateDashboard();showStatus('Agendamento realizado!');
+  ['ag_obs','ag_data'].forEach(id=>document.getElementById(id).value='');
+}
+
+// RENDER
+function renderTable(type){
+  var tbody=document.getElementById('tbody-'+type);
+  var data=DB[type];
+  var empty='<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:24px">Nenhum registro</td></tr>';
+  if(!data.length){tbody.innerHTML=empty;return;}
+  if(type==='pacientes'){tbody.innerHTML=data.map(r=>`<tr><td><strong>${r.nome}</strong></td><td>${r.especie}</td><td>${r.raca||'-'}</td><td>${r.nasc?calcAge(r.nasc):'-'}</td><td>${r.tutor||'<span style="color:var(--muted)">—</span>'}</td><td><button class="btn btn-sm" onclick="verHistorico('${r.nome}')" title="Histórico"><i class="ti ti-history"></i></button><button class="btn btn-sm" style="color:var(--coral);margin-left:4px" onclick="deletar('pacientes',${r.id})" title="Remover"><i class="ti ti-trash"></i></button></td></tr>`).join('');}
+  if(type==='tutores'){tbody.innerHTML=data.map(r=>`<tr><td><strong>${r.nome}</strong></td><td>${r.cpf||'—'}</td><td>${r.tel||'—'}</td><td>${r.email||'—'}</td><td>${r.end||'—'}</td><td><button class="btn btn-sm" style="color:var(--coral)" onclick="deletar('tutores',${r.id})"><i class="ti ti-trash"></i></button></td></tr>`).join('');}
+  if(type==='consultas'){tbody.innerHTML=data.map(r=>`<tr><td>${fmtDt(r.data)}</td><td><strong>${r.paciente}</strong></td><td>${r.tipo}</td><td>${r.diag||'—'}</td><td>R$ ${parseFloat(r.valor||0).toFixed(2)}</td><td><span class="badge ${r.status==='Realizado'?'badge-green':r.status==='Cancelado'?'badge-coral':'badge-gold'}">${r.status}</span></td><td><button class="btn btn-sm" style="color:var(--coral)" onclick="deletar('consultas',${r.id})"><i class="ti ti-trash"></i></button></td></tr>`).join('');}
+  if(type==='vacinas'){tbody.innerHTML=data.map(r=>`<tr><td><strong>${r.paciente}</strong></td><td>${r.nome}</td><td>${r.data||'—'}</td><td>${r.proxima||'—'}</td><td>${r.lote||'—'}</td><td><span class="badge ${vencClass(r.proxima)}">${vencLabel(r.proxima)}</span></td><td><button class="btn btn-sm" style="color:var(--coral)" onclick="deletar('vacinas',${r.id})"><i class="ti ti-trash"></i></button></td></tr>`).join('');}
+  if(type==='produtos'){tbody.innerHTML=data.map(r=>`<tr><td><strong>${r.nome}</strong></td><td><span class="badge badge-navy">${r.cat}</span></td><td>R$ ${parseFloat(r.preco||0).toFixed(2)}</td><td>${r.estoque} ${r.unidade}</td><td><button class="btn btn-sm" style="color:var(--coral)" onclick="deletar('produtos',${r.id})"><i class="ti ti-trash"></i></button></td></tr>`).join('');}
+}
+
+function deletar(tipo,id){if(!confirm('Remover este registro?'))return;DB[tipo]=DB[tipo].filter(r=>r.id!==id);saveLocal();renderTable(tipo);updateDashboard();showStatus('Removido.');}
+
+function verHistorico(nome){
+  document.querySelector('[data-panel="historico"]').click();
+  setTimeout(()=>{var sel=document.getElementById('historicoPaciente');for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===nome){sel.selectedIndex=i;break;}}loadHistorico();},100);
+}
+
+// AGENDA
+function renderAgenda(){
+  var list=document.getElementById('agendaList');
+  var items=[...DB.consultas].filter(c=>c.status==='Agendado').sort((a,b)=>new Date(a.data)-new Date(b.data));
+  if(!items.length){list.innerHTML='<div class="table-card"><div style="padding:32px;text-align:center;color:var(--muted);font-size:13px">Nenhum agendamento</div></div>';return;}
+  var byDay={};items.forEach(i=>{var d=i.data?i.data.split('T')[0]:'Sem data';if(!byDay[d])byDay[d]=[];byDay[d].push(i);});
+  list.innerHTML=Object.entries(byDay).map(([day,its])=>`<div class="agenda-day"><div class="agenda-day-header"><i class="ti ti-calendar-event"></i>${fmtDate(day)}</div>${its.map(i=>`<div class="agenda-item"><div class="agenda-time">${i.data&&i.data.includes('T')?i.data.split('T')[1].slice(0,5):'-'}</div><div style="flex:1"><div class="agenda-info"><div class="pet">${i.paciente}</div><div class="sub">${i.tipo}${i.vet?' · '+i.vet:''}</div></div></div><span class="badge badge-gold">Agendado</span></div>`).join('')}</div>`).join('');
+}
+
+// DASHBOARD
+function updateDashboard(){
+  document.getElementById('stat-pacientes').textContent=DB.pacientes.length;
+  document.getElementById('stat-tutores').textContent=DB.tutores.length;
+  var today=new Date().toISOString().split('T')[0];
+  document.getElementById('stat-consultas').textContent=DB.consultas.filter(c=>c.data&&c.data.startsWith(today)&&c.status==='Agendado').length;
+  var in30=new Date();in30.setDate(in30.getDate()+30);
+  document.getElementById('stat-vacinas').textContent=DB.vacinas.filter(v=>{if(!v.proxima)return false;var d=new Date(v.proxima);return d<=in30&&d>=new Date();}).length;
+  var dc=document.getElementById('dash-consultas');
+  var up=[...DB.consultas].filter(c=>c.status==='Agendado').sort((a,b)=>new Date(a.data)-new Date(b.data)).slice(0,5);
+  dc.innerHTML=up.length?up.map(c=>`<li><div><div class="name">${c.paciente}</div><div class="detail">${c.tipo}</div></div><span style="font-size:12px;color:var(--muted)">${fmtDt(c.data)}</span></li>`).join(''):'<li style="color:var(--muted);font-size:13px;padding:18px 0">Nenhuma consulta agendada</li>';
+  var dp=document.getElementById('dash-pacientes');
+  var rec=[...DB.pacientes].reverse().slice(0,5);
+  dp.innerHTML=rec.length?rec.map(p=>`<li><div><div class="name">${p.nome}</div><div class="detail">${p.especie}${p.tutor?' · '+p.tutor:''}</div></div></li>`).join(''):'<li style="color:var(--muted);font-size:13px;padding:18px 0">Nenhum paciente cadastrado</li>';
+}
+
+// HISTÓRICO
+function populateHistoricoSelect(){
+  var sel=document.getElementById('historicoPaciente');var cur=sel.value;
+  sel.innerHTML='<option value="">Selecione um paciente...</option>';
+  DB.pacientes.forEach(p=>{var o=document.createElement('option');o.value=p.nome;o.textContent=p.nome+' ('+p.especie+')';sel.appendChild(o);});
+  if(cur)sel.value=cur;
+}
+function loadHistorico(){
+  var nome=document.getElementById('historicoPaciente').value;
+  var cont=document.getElementById('historicoContent');
+  if(!nome){cont.innerHTML='<div class="table-card"><div style="padding:32px;text-align:center;color:var(--muted);font-size:13px">Selecione um paciente para ver o histórico</div></div>';return;}
+  var pac=DB.pacientes.find(p=>p.nome===nome);
+  var cons=DB.consultas.filter(c=>c.paciente===nome).sort((a,b)=>new Date(b.data)-new Date(a.data));
+  var vacs=DB.vacinas.filter(v=>v.paciente===nome).sort((a,b)=>new Date(b.data)-new Date(a.data));
+  cont.innerHTML=`
+    <div class="table-card" style="margin-bottom:14px">
+      <div class="table-header"><h3><i class="ti ti-paw" style="color:var(--green)"></i> ${nome}</h3></div>
+      <div style="padding:14px 18px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:13px">
+        <div><span style="color:var(--muted)">Espécie:</span> ${pac?pac.especie:'-'}</div>
+        <div><span style="color:var(--muted)">Raça:</span> ${pac?pac.raca||'—':'-'}</div>
+        <div><span style="color:var(--muted)">Tutor:</span> ${pac?pac.tutor||'—':'-'}</div>
+        <div><span style="color:var(--muted)">Peso:</span> ${pac&&pac.peso?pac.peso+' kg':'—'}</div>
+        <div><span style="color:var(--muted)">Nascimento:</span> ${pac?pac.nasc||'—':'-'}</div>
+        <div><span style="color:var(--muted)">Microchip:</span> ${pac?pac.chip||'—':'-'}</div>
+      </div>
+    </div>
+    <div class="table-card" style="margin-bottom:14px">
+      <div class="table-header"><h3>Consultas (${cons.length})</h3></div>
+      <div style="overflow-x:auto"><table><thead><tr><th>Data</th><th>Tipo</th><th>Diagnóstico</th><th>Tratamento</th><th>Valor</th><th>Status</th></tr></thead>
+      <tbody>${cons.length?cons.map(c=>`<tr><td>${fmtDt(c.data)}</td><td>${c.tipo}</td><td>${c.diag||'—'}</td><td>${c.trat||'—'}</td><td>R$ ${parseFloat(c.valor||0).toFixed(2)}</td><td><span class="badge ${c.status==='Realizado'?'badge-green':c.status==='Cancelado'?'badge-coral':'badge-gold'}">${c.status}</span></td></tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:16px">Sem consultas</td></tr>'}</tbody></table></div>
+    </div>
+    <div class="table-card">
+      <div class="table-header"><h3>Vacinas (${vacs.length})</h3></div>
+      <div style="overflow-x:auto"><table><thead><tr><th>Vacina</th><th>Data</th><th>Próxima dose</th><th>Lote</th><th>Status</th></tr></thead>
+      <tbody>${vacs.length?vacs.map(v=>`<tr><td><strong>${v.nome}</strong></td><td>${v.data||'—'}</td><td>${v.proxima||'—'}</td><td>${v.lote||'—'}</td><td><span class="badge ${vencClass(v.proxima)}">${vencLabel(v.proxima)}</span></td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:16px">Sem vacinas</td></tr>'}</tbody></table></div>
+    </div>
+  `;
+}
+
+// FINANCEIRO
+function loadFinanceiro(){
+  var total=DB.consultas.reduce((s,c)=>s+parseFloat(c.valor||0),0);
+  var now=new Date();
+  var mes=DB.consultas.filter(c=>{if(!c.data)return false;var d=new Date(c.data);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}).reduce((s,c)=>s+parseFloat(c.valor||0),0);
+  document.getElementById('fin-total').textContent='R$ '+total.toFixed(2);
+  document.getElementById('fin-mes').textContent='R$ '+mes.toFixed(2);
+  document.getElementById('fin-mes-label').textContent=now.toLocaleString('pt-BR',{month:'long',year:'numeric'});
+  document.getElementById('fin-consultas').textContent=DB.consultas.filter(c=>c.status==='Realizado').length;
+  var tb=document.getElementById('tbody-financeiro');
+  var sorted=[...DB.consultas].sort((a,b)=>new Date(b.data)-new Date(a.data));
+  tb.innerHTML=sorted.length?sorted.map(c=>`<tr><td>${fmtDt(c.data)}</td><td><strong>${c.paciente}</strong></td><td>${c.tipo}</td><td>R$ ${parseFloat(c.valor||0).toFixed(2)}</td><td><span class="badge ${c.status==='Realizado'?'badge-green':c.status==='Cancelado'?'badge-coral':'badge-gold'}">${c.status}</span></td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">Nenhum registro</td></tr>';
+}
+
+// SETUP
+function loadSetup(){document.getElementById('sheetsUrl').value=localStorage.getItem('da_sheetsUrl')||'';document.getElementById('dataMode').value=localStorage.getItem('da_dataMode')||'local';}
+function saveSetup(){
+  var url=document.getElementById('sheetsUrl').value.trim();
+  var mode=document.getElementById('dataMode').value;
+  localStorage.setItem('da_sheetsUrl',url);localStorage.setItem('da_dataMode',mode);
+  SHEETS_URL=url;DATA_MODE=mode;
+  var msg=document.getElementById('setupMsg');msg.style.display='block';msg.style.color='var(--green)';
+  msg.textContent='✓ Configuração salva! '+(mode==='sheets'?'Dados serão enviados para o Google Sheets.':'Modo local ativo.');
+  document.getElementById('sheetsStatusText').textContent=url&&mode==='sheets'?'Sheets conectado':'Configurar Sheets';
+  showStatus('Configuração salva!');
+}
+function testConnection(){
+  var url=document.getElementById('sheetsUrl').value.trim();
+  var msg=document.getElementById('setupMsg');msg.style.display='block';
+  if(!url){msg.style.color='var(--coral)';msg.textContent='Cole a URL do Apps Script primeiro.';return;}
+  msg.style.color='var(--muted)';msg.textContent='Testando conexão...';
+  // Apps Script redireciona e bloqueia CORS — usamos script tag para GET (JSONP-style workaround)
+  var testUrl = url + '?sheet=Tutores';
+  fetch(testUrl, {method:'GET', mode:'no-cors', redirect:'follow'})
+    .then(()=>{
+      // no-cors retorna opaque response — se não jogou exceção, chegou ao servidor
+      msg.style.color='var(--green)';
+      msg.textContent='✓ Conexão estabelecida! Salvando dados no Google Sheets.';
+    })
+    .catch(()=>{
+      msg.style.color='var(--coral)';
+      msg.textContent='Erro de rede. Verifique sua conexão com a internet.';
+    });
+}
+function copyCode(){navigator.clipboard.writeText(document.getElementById('appsScriptCode').textContent).then(()=>showStatus('Código copiado!'));}
+
+// SHEETS SYNC
+async function syncToSheets(sheet,row){
+  if(DATA_MODE!=='sheets'||!SHEETS_URL)return;
+  try{
+    // Iframe invisível contorna CORS — o Google processa normalmente
+    var params = new URLSearchParams({action:'append',sheet:sheet,row:JSON.stringify(row)});
+    var url = SHEETS_URL+'?'+params.toString();
+    var iframe = document.createElement('iframe');
+    iframe.style.display='none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+    setTimeout(()=>{ try{document.body.removeChild(iframe);}catch(e){} }, 5000);
+  }catch(e){console.warn('Sync erro:',e);}
+}
+
+// FILTER
+function filterTable(type){
+  var inputId='search'+type.charAt(0).toUpperCase()+type.slice(1);
+  var q=document.getElementById(inputId)?.value?.toLowerCase()||''
+  if(!q){renderTable(type);return;}
+  var orig=DB[type];DB[type]=orig.filter(r=>Object.values(r).join(' ').toLowerCase().includes(q));renderTable(type);DB[type]=orig;
+}
+
+// HELPERS
+function calcAge(dob){var d=new Date(dob),now=new Date();var m=(now.getFullYear()-d.getFullYear())*12+(now.getMonth()-d.getMonth());return m<12?m+'m':Math.floor(m/12)+'a';}
+function fmtDt(s){if(!s)return'—';try{var d=new Date(s);return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});}catch(e){return s;}}
+function fmtDate(s){if(!s)return'—';try{var d=new Date(s+'T00:00:00');return d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});}catch(e){return s;}}
+function vencClass(p){if(!p)return'badge-gold';var d=new Date(p),now=new Date(),in30=new Date();in30.setDate(in30.getDate()+30);if(d<now)return'badge-coral';if(d<=in30)return'badge-gold';return'badge-green';}
+function vencLabel(p){if(!p)return'Sem data';var d=new Date(p),now=new Date(),in30=new Date();in30.setDate(in30.getDate()+30);if(d<now)return'Vencida';if(d<=in30)return'Vence em breve';return'Em dia';}
+
+// INIT
+updateDashboard();
+document.getElementById('sheetsStatusText').textContent=SHEETS_URL&&DATA_MODE==='sheets'?'Sheets conectado':'Configurar Sheets';
+</script>
+</body>
+</html>
